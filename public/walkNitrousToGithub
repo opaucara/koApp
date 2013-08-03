@@ -1,0 +1,8 @@
+Use this walkthrough to push a nitrous repository to github
+- Create/find your ssh keys located in ~/.ssh/id_rsa.pub, on nitrous.io terminal
+- In github add this keys in your account settings
+- and a new empty repository(do not initialize it) to store there your nitrous.io's repository. Name it for example "repotest"
+- Back to nitrous.io, go to your repository and add github empty repository as a remote
+   git remote add origin git@github.com:opaucara/repotest.git
+- then push your local repository to github
+   git push origin master
