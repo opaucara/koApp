@@ -10,8 +10,6 @@ var app = express();
 }).listen(3000, '127.0.0.1');*/
 //  mongo --shell --host ds035488.mongolab.com --port 35488 -u admin -p admin nitroussample 
 
-
-
 app.configure(function () {
   app.set('port', process.env.PORT || 3000);
   app.use(express.logger('dev'));
@@ -22,7 +20,7 @@ app.configure(function () {
 });
 
 app.get('/', function (req, res) {
-  fs.readFile('../index.html', 'utf8', function (err, text) {
+  fs.readFile('index.html', 'utf8', function (err, text) {
     res.send(text);
   });
 });
