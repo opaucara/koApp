@@ -1,32 +1,17 @@
 require.config({
-  /*paths: {
-    jquery: 'libs/jquery-1.9.1',
-    underscore: 'libs/underscore',
-    backbone: 'libs/backbone',
-    bbloader: 'libs/backbone.loader',
-    text: 'libs/text',
-    bootstrap: 'libs/bootstrap',
-    modals: 'libs/modals',
-    'backbone.marionette': 'libs/backbone.marionette',
-    'backbone.babysitter': 'libs/backbone.babysitter',
-    'backbone.wreqr': 'libs/backbone.wreqr'
-  }*/
+  paths: {
+    jquery: 'vendor/jquery-1.7.2.min',
+    jqueryui: 'vendor/jquery-ui.min',
+    knockout: 'vendor/knockout-2.3.0',
+    knockoutMin: 'vendor/knockout-2.3.0.debug',
+    underscore: 'vendor/underscore-min'
+    //bbloader: 'libs/backbone.loader',
+  }
 });
 
 require([
-  /*'app/common/eventHandler',
-  'app/app',
-  'app/modules/top/top',
-  'app/modules/movies/movies',
-  'app/modules/menu/menu',
-    'app/modules/usersRels/usersRels',
-    'app/modules/modal/modal'*/
-], function(eventHandler, app, top, movies, menu, usersRels) {
-/*  menu.on('start', function () {
-
-    eventHandler.trigger('menu:createButton', movies.menuConf);
-  });
-*/
-alert(5);
-  //app.start();
+  'deloitteApp',
+  'ko.bindingHandler.koAccordion'
+], function(deloitteApp) {
+  deloitteApp.init();
 });
