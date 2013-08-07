@@ -29,3 +29,28 @@ body {
 .clearfix {
   clear: both;
 }
+/* Help desk*/
+.ui-widget .ui-state-default {
+  background-image: none;
+  background-color: #B8BCBE;
+}
+ul.question-list .ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited {
+  color: #404040;
+}
+ul.question-list .ui-widget-content{
+  background-image: none;
+  background-color: #EBF1F4;
+}
+
+.ui-accordion-header a {
+  font-size: 13px;
+}
+/**/
+.title{
+  color: #555657;
+  font-size: 18px;
+}
+.content {
+  color: #414446;
+  font-size: 13px;
+}
