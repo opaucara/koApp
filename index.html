@@ -25,27 +25,21 @@
     </section>
     <div class="clearfix"></div>
     <nav>
-      <ul class="question-list" data-bind="
-            foreach: faqList,
-            koAccordion: {
-            updateOn: faqList,
-            options:{
-              active: false,
-              autoHeight: false, 
-              collapsible: true}
-            }">
-      
-        <li>
-          <div class="header">
-            <span class="rigth-arrow"></span>
-            <a href="#" data-bind="text: title"></a>
-          </div>
-          <div class="content">
-            <h2 data-bind="text: title"></h2>
-            <div data-bind="text: content"></div>
-          </div>
-        </li>
-      
+      <ul class="question-list" data-bind="koAccordion: {
+                data: faqList,
+                active: false,
+                autoHeight: false, 
+                collapsible: true }">
+          <li> 
+            <div class="header">
+              <span class="rigth-arrow"></span>
+              <a href="#" data-bind="text: title"></a>
+            </div>
+            <div class="content">
+              <h2 data-bind="text: title"></h2>
+              <div data-bind="text: content"></div>
+            </div>
+          </li>
       </ul>
       
     </nav>
