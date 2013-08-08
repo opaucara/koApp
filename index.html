@@ -4,6 +4,9 @@
   <title>Backbone App</title>
   <link rel="stylesheet" href="css/style.css" />
   <link rel="stylesheet" type="text/css" href="css/ui-lightness/jquery-ui-1.10.3.custom.css">
+  <script type="text/javascript">
+    var devEnv = !!location.search.substr(5);
+  </script>
   <script data-main="js/main" src="js/vendor/require.js"></script>
 </head>
 <body>
@@ -22,11 +25,16 @@
     </section>
     <div class="clearfix"></div>
     <nav>
-      <ul class="question-list" data-bind="koAccordion: {
+      <ul class="question-list" data-bind="
+            foreach: faqList,
+            koAccordion: {
+            updateOn: faqList,
+            options:{
               active: false,
               autoHeight: false, 
-              collapsible: true}">
-      <!-- ko foreach: faqList -->
+              collapsible: true}
+            }">
+      
         <li>
           <div class="header">
             <span class="rigth-arrow"></span>
@@ -37,7 +45,7 @@
             <div data-bind="text: content"></div>
           </div>
         </li>
-      <!-- /ko -->
+      
       </ul>
       
     </nav>
