@@ -10,29 +10,40 @@ body {
   padding: 1%;
 }
 .email {
-  color: rgb(104,133,171);
+  color: #3A75B8;
   float: left;
   padding-left: 2%;
 }
 .help {
   padding-right: 2%;
-  color: rgb(194,200,203);
+  color: #878F94;
   float: right;
   text-align: right;
 }
 .help-desk{
   color: #fff;
-  background-color: rgb(144, 197,67);
+  background-color: #9FCE54;
   float: right;
   padding: 1%;
+  padding-left: 2%;
+  padding-right: 2%;
+  font-size: 13px;
 }
 .clearfix {
   clear: both;
 }
+.right-arrow {
+  width: 1px;
+  height: 41px;
+  background-color: #9b9999;
+  position: absolute;
+  margin: -8px;
+  display: block;
+}
 /* Help desk*/
 .ui-widget .ui-state-default {
   background-image: none;
-  background-color: #B8BCBE;
+  background-color: #BCBFC1;
 }
 ul.question-list .ui-state-default a, .ui-state-default a:link, .ui-state-default a:visited {
   color: #404040;
@@ -45,12 +56,16 @@ ul.question-list .ui-widget-content{
 .ui-accordion-header a {
   font-size: 13px;
 }
+
+.question-list.ui-accordion .ui-accordion-header {
+  margin-top: 0;
+}
 /**/
 .title{
   color: #555657;
   font-size: 18px;
 }
 .content {
-  color: #414446;
+  color: #A8AFB3;
   font-size: 13px;
 }
