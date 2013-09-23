@@ -1,0 +1,147 @@
+DR – US 2 – Landing Page
+
+Acceptance Criteria
+As a User I want to be able to land in a Landing Page with options in order to navigate over the application.
+Description
+Users should to be able to land (after the login to the application) in a Landing Page to provide to the user a number of items to allow to the user to start to work with the application. 
+After the user login, the landing page allows to the user to start to use the application by the provided functionalities. 
+The entire user Roles in the application will have common items. Regarding Administrators, they should have access to the entire user request list in order to approve/cancel all the user submits.
+The landing page should have the next list of items: 
+- User Menu Bar (al the next Items are visual decoration) 
+       -JPM logo
+       -Application Logo
+       -Logged User picture
+       -Welcome title followed by Logged User Name
+       -Menu Icon
+       - User Menu Options (Upper Right) with the next Functions:  
+             -My Profile    
+             -My Request 
+             -User Request (Only available if User its Administrator User) 
+             -Log Out
+-Home Button 
+- Disaster Types
+       - Disaster kind lists  
+              - Each elements inside Disaster types, corresponds to one kind of disaster.
+- Donation function
+- A short preview list of User Financial Assessment requests (Only available if User its Administrator User)
+      -An option to view all requests
+
+Home Button 
+When the user navigates over any of the functionalities, a Home button should be provided in order to allow to the user to get back to the landing page. 
+
+If the user select home button in order to get back to the landing page, and he is actually fulfilling a financial assessment request, a warning message should appear with the legend: 
+	
+
+User Menu Options (There is a US associated <Link to the US to be completed later>)
+All the users should be able to open a Menu Options. These options will be available across the application. 
+User menu Options will offer to the User access to see: 
+My Profile
+Their own Profiles information (Read Only) 
+My Request
+Access to a list of “My request” where all the financial assistance requested will be listed. 
+User Request
+Administrator will have access to a complete list of User request, where all the financial assistance will be listed in order to be Approved/Rejected. 
+Log Out
+User will be able to log out from the application selecting “Log Out” function. 
+
+Disaster Types (There is a US associated <Link to the US to be completed later>)
+Landing page provides to the user a list of Disaster types (3), regarding each type of disaster. 
+1 – Hurricane/Tornado
+2 – Flood
+3 – Fire
+For each kind of disaster the user will be able to select from a list of actual disaster to apply a financial assistance request. 
+
+Donation (There is a US associated <Link to the US to be completed later>)
+Users should to be able to donate money for a common fund in order to provide economic help for all those users/employees that needs financial assessment help. 
+N.F.BA: This functionality actually its OOE, but we need to provide a view with the legend “Under construction”. 
+
+Administrators Only: Requested Financial Assistance from Users (There is a US associated <Link to the US to be completed later>)
+Administrator’s users should to be able to see a preview for all those requested Financial Assistance from the users/employees. 
+Those listed items should be linkable directly from the list in order to allow to the Administrators to view the request to be approved/rejected. 
+
+USER CASES
+Actors
+Id
+Name
+Description
+Classification
+AC01
+User
+Users are able to navigate over the application
+PR
+AC02
+Administrator
+Administrator are able to navigate over the application and access to extra items
+SC
+
+Preconditions
+Id
+Description
+PR01
+Users can navigate over the application by Landing Page
+SC01
+Administrators can navigate over the application by Landing Page and have access to extra items
+
+Post conditions
+Id
+Description
+Type
+PO01
+All User Roles should land on landing Page
+VC/MG
+PO02
+All User Roles are able to navigate through the items from the Landing Page
+FC/MG
+PO03
+All User Roles should be able to log out from the application
+VC/MG
+PO04
+All User Roles should confirm log out
+VC/MG
+PO05
+Administrator Users should able to access to User Requests through an extra field on the Landing Page
+VC/MG
+PO06
+All Users Roles are able to open a User menu options from Landing Page
+VC/MG
+
+Main Flow
+Id
+Step Description
+Data (I/O) 
+Branches
+Rules
+MF01
+
+
+
+
+MF02
+
+
+
+
+MF03
+
+
+
+
+MF04
+
+
+
+
+
+
+References
+Classification
+|PR
+Primary Actor
+SC
+Secondary Actor
+VC
+The state of the use case upon successful completion.
+FC
+The state of the use case upon failed completion.
+MG
+Minimum guarantee.
