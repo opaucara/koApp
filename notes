@@ -1,0 +1,13 @@
+Admin role must be controled from BE and load AppViewModel/AppViewModelAdmin, accordingly.
+Each region load proper js/tpl
+
+  DisasterSelectionListRegularArea (RegularUser)
+  DisasterSelectionListAdminArea   (AdminUser => extends RegularUser)
+->DisasterTypeList 3 (fire, hurricane, flood)
+    +DisasterList , groupBy type
+
+Admin Only
+->User Financial Assessment requests, UFAR
+ +list of UFAR
+  (button) "View All"
+
