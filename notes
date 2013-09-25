@@ -11,6 +11,17 @@ Admin Only
  +list of UFAR
   (button) "View All"
 ************************************
+
+EG.
+the landingPage (listArea) could have 4 states to handle
+-0 New
+-1 Incomplete/Draft request
+-2 Pending request Approval
+-3 Requested Ended (approved or Rejected)
+viewModule.SelectioListArea[0] = load "standar list module"
+viewModule.SelectioListArea[3] = this module will load "Disable list with a Select disaster Icon w modal to completed form"
+
+
 State machine
 Slides
 http://code.dougneiner.com/presentations/machina/#session/1
