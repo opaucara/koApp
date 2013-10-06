@@ -1,17 +1,3 @@
-Admin role must be controled from BE and load AppViewModel/AppViewModelAdmin, accordingly.
-Each region load proper js/tpl
-
-  DisasterSelectionListRegularArea (RegularUser)
-  DisasterSelectionListAdminArea   (AdminUser => extends RegularUser)
-->DisasterTypeList 3 (fire, hurricane, flood)
-    +DisasterList , groupBy type
-
-Admin Only
-->User Financial Assessment requests, UFAR
- +list of UFAR
-  (button) "View All"
-************************************
-
 EG.
 the landingPage (listArea) could have 4 states to handle
 -0 New
@@ -30,4 +16,41 @@ http://code.dougneiner.com/presentations/machina/connectivity/
 *************************
 Cool modal efects
 http://tympanus.net/Development/ModalWindowEffects/
+*************************
+BOOKMARKEABILITY
+using hash tags #, so no interpretated by Backend
+
+History.getState().hash
+
+history.pushState(null,null, '/demo/form/5')
+
+
+appViewModel.init()
+init = function () {
+  getCurrentUrl: '/form/:id';
+  areasToLoad = getModulesByHashRoute(currentUrl);
+  for (){
+    view = areasToLoad[i];
+    var res = this.regions.getRegionNameByViewName(view);
+    this.regions[res.regionName].loadTemplate(this.regions[res.regionName].viewModules[res.key]);
+  }
+}
+
+
+
+regionName: 'headerTemplate',
+nameModule: 'HeaderArea',
+routeAssociated: '/*'
+
+regionName: 'mainContentTemplate',
+nameModule: 'DisasterSelectorArea',
+routeAssociated: '/'
+
+regionName: 'mainContentTemplate',
+nameModule: 'ProfileArea',
+routeAssociated: '/myProfile'
+
+regionName: 'mainContentTemplate',
+nameModule: 'FinancialForm',
+routeAssociated: '/form/:id'
 
