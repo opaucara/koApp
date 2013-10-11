@@ -54,3 +54,19 @@ regionName: 'mainContentTemplate',
 nameModule: 'FinancialForm',
 routeAssociated: '/form/:id'
 
+******************************
+LBL_FINANCIAL_FORM = "Financial Form";
+LBL_STATUS = 'Status';
+LBL_LOSS_TYPE = 'Loss type';
+
+MSG_ERROR_USER_NOT_FOUND = "The user doesn't exist";
+MSG_USER_SUCCESSFULLY_DELETED = "User was successfully deleted";
+MSG_ERROR_CHOOSE_OPTION = 'Choose an option';
+MSG_GENERIC_ERROR = "An error has ocurred";
+MSG_SUCCESS = 'Success';
+MSG_ERROR = 'Error';
+MSG_SUBMIT_HAS_FAILED = 'Submit Request has failed';
+
+BTN_SAVE_AS_DRAFT = 'Save as draft';
+BTN_SUBMIT_REQUEST = 'Submit Request';
+
