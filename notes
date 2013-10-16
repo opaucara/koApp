@@ -16,44 +16,6 @@ http://code.dougneiner.com/presentations/machina/connectivity/
 *************************
 Cool modal efects
 http://tympanus.net/Development/ModalWindowEffects/
-*************************
-BOOKMARKEABILITY
-using hash tags #, so no interpretated by Backend
-
-History.getState().hash
-
-history.pushState(null,null, '/demo/form/5')
-
-
-appViewModel.init()
-init = function () {
-  getCurrentUrl: '/form/:id';
-  areasToLoad = getModulesByHashRoute(currentUrl);
-  for (){
-    view = areasToLoad[i];
-    var res = this.regions.getRegionNameByViewName(view);
-    this.regions[res.regionName].loadTemplate(this.regions[res.regionName].viewModules[res.key]);
-  }
-}
-
-
-
-regionName: 'headerTemplate',
-nameModule: 'HeaderArea',
-routeAssociated: '/*'
-
-regionName: 'mainContentTemplate',
-nameModule: 'DisasterSelectorArea',
-routeAssociated: '/'
-
-regionName: 'mainContentTemplate',
-nameModule: 'ProfileArea',
-routeAssociated: '/myProfile'
-
-regionName: 'mainContentTemplate',
-nameModule: 'FinancialForm',
-routeAssociated: '/form/:id'
-
 ******************************
 LBL_FINANCIAL_FORM = "Financial Form";
 LBL_STATUS = 'Status';
@@ -70,3 +32,44 @@ MSG_SUBMIT_HAS_FAILED = 'Submit Request has failed';
 BTN_SAVE_AS_DRAFT = 'Save as draft';
 BTN_SUBMIT_REQUEST = 'Submit Request';
 
+*******************************
+BOOKMARKEABILITY
+var optionalParam = /\((.*?)\)/g;
+var namedParam    = /(\(\?)?:\w+/g;
+var splatParam    = /\*\w+/g;
+var escapeRegExp  = /[\-{}\[\]+?.,\\\^$|#\s]/g;
+function _routeToRegExp(route) {
+      route = route.replace(escapeRegExp, '\\$&')
+                   .replace(optionalParam, '(?:$1)?')
+                   .replace(namedParam, function(match, optional){
+                     return optional ? match : '([^\/]+)';
+                   })
+                   .replace(splatParam, '(.*?)');
+      return new RegExp('^' + route + '$');
+    }
+
+ // Given a route, and a URL fragment that it matches, return the array of
+    // extracted decoded parameters. Empty or unmatched parameters will be
+    // treated as `null` to normalize cross-browser behavior.
+function _extractParameters(route, fragment) {
+  var params = route.exec(fragment).slice(1);
+  return _.map(params, function(param) {
+    return param ? decodeURIComponent(param) : null;
+  });
+}
+
+_routeToRegExp('movies');
+_extractParameters(_routeToRegExp('movies'), 'movies');
+
+
+_extractParameters(_routeToRegExp('movies/detail/:id'), 'movies/detail/5');
+
+_extractParameters(_routeToRegExp('movies/new'), 'movies/new/');
+_extractParameters(_routeToRegExp('movies/edit/:id'), 'movies/edit/fg');
+-------
+appRoutes: {
+      'movies': 'showCollectionView',
+      'movies/detail/:id': 'showDetailView',
+      'movies/new': 'showFormView',
+      'movies/edit/:id': 'showFormView'
+    }
