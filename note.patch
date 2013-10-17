@@ -1,0 +1,185 @@
+Index: Scripts/app/applicationManager/AppViewModelAdminUser.js
+===================================================================
+--- Scripts/app/applicationManager/AppViewModelAdminUser.js	(revision 10465)
++++ Scripts/app/applicationManager/AppViewModelAdminUser.js	(working copy)
+@@ -4,11 +4,11 @@
+     this.isLoading = ko.observable(true);
+     AppViewModelBaseUser.call(this);
+     var headerRegions = {
+-      templateUrl: DR.constants.appUrl + 'Default',
++      templateUrl: DR.constants.appUrl + 'Views/Default',
+       regionName: 'headerTemplate',
+       data: [{
+         name: 'HeaderArea',
+-        view: 'HeaderAdminArea',
++        view: '_HeaderArea.cshtml',
+         routeAssociated: '',
+         module: 'viewmodels/headerArea',
+         onModuleLoaded: function (resolveData, Module) {
+@@ -17,11 +17,11 @@
+       }]
+     };
+     var mainContentRegions = {
+-      templateUrl: DR.constants.appUrl + 'Default',
++      templateUrl: DR.constants.appUrl + 'Views/Default',
+       regionName: 'mainContentTemplate',
+       data: [{
+         name: 'DisasterSelectionListArea',
+-        view: 'DisasterSelectionListAdminArea',
++        view: '_DisasterSelectionListArea.cshtml',
+         routeAssociated: '',
+         module: 'viewmodels/disasterSelectionListAdminArea',
+         onModuleLoaded: function (resolveData, Module) {
+@@ -57,7 +57,7 @@
+       },
+       {
+         name: 'FinancialForm',
+-        view: 'FinancialForm',
++        view: 'FinancialForm/request/_FinancialForm.cshtml',
+         routeAssociated: 'request',
+         module: 'viewmodels/financialForm/request/financialForm',
+         onModuleLoaded: _.bind(function (resolveData, Module) {
+@@ -66,7 +66,7 @@
+       },
+       {
+         name: 'UserManagement',
+-        view: 'UserPermission',
++        view: 'Administration/_UserPermission.cshtml',
+         routeAssociated: 'users',
+         module: 'viewmodels/Administration/user',
+         onModuleLoaded: _.bind(function (resolveData, user) {
+@@ -79,7 +79,7 @@
+       },
+       {
+         name: 'FinancialFormList',
+-        view: 'FinancialFormList',
++        view: 'FinancialForm/evaluation/_FinancialFormList.cshtml',
+         routeAssociated: 'form',
+         module: 'viewmodels/financialForm/evaluation/financialFormList',
+         onModuleLoaded: _.bind(function (resolveData, Module) {
+@@ -88,7 +88,7 @@
+       },
+       {
+         name: 'FinancialFormEvaluation',
+-        view: 'FinancialFormEvaluation',
++        view: 'FinancialForm/evaluation/_FinancialFormEvaluation.cshtml',
+         routeAssociated: 'form/:id',
+         module: 'viewmodels/financialForm/evaluation/financialFormEvaluation',
+         onModuleLoaded: _.bind(function (resolveData, Module) {
+@@ -106,7 +106,7 @@
+       this.loadViewModule('HeaderArea');
+       if (window.location.search.indexOf('?')>=0 && this.regions.findModuleByQueryString(window.location.search)){
+          moduleToMainContent = this.regions.findModuleByQueryString(window.location.search);
+-         this.loadViewModule(moduleToMainContent.name, moduleToMainContent);
++         this.loadViewModule(moduleToMainContent.name, moduleToMainContent.param, true);
+       }else {
+         this.loadViewModule(moduleToMainContent);
+       }
+Index: Scripts/app/applicationManager/AppViewModelBaseUser.js
+===================================================================
+--- Scripts/app/applicationManager/AppViewModelBaseUser.js	(revision 10465)
++++ Scripts/app/applicationManager/AppViewModelBaseUser.js	(working copy)
+@@ -6,12 +6,15 @@
+     this.regions = new RegionHandler();
+     this.stateChangedByLoadViewModule = false;
+ 
+-    this.loadViewModule = function(moduleName, param){
++    this.loadViewModule = function(moduleName, param, hasFriendlyUrl){
+       //TODO add error handler
+       this.params = param || {};
+       var module = this.regions.getRegionModuleByName(moduleName);
+       this.regions[module.regionName].loadTemplate(this.regions[module.regionName].viewModules[module.key]);
+-      if (module.route || module.name === this.defaultMainModule) {
++      if (!hasFriendlyUrl && module.route || module.name === this.defaultMainModule ) {
++        //Used only by app navigation
++        //BuildRouteUrl using routePattern and param
++        //var prettyUrl = this.regions.buildRouteUrl(module.route);
+         this.stateChangedByLoadViewModule = true;
+         History.pushState({moduleName: module.name}, null, '?' + (module.route? module.route : ''));
+       }
+Index: Scripts/app/applicationManager/RegionHandler.js
+===================================================================
+--- Scripts/app/applicationManager/RegionHandler.js	(revision 10465)
++++ Scripts/app/applicationManager/RegionHandler.js	(working copy)
+@@ -8,13 +8,14 @@
+       this[region.regionName].viewModules = templateManager.getVMTemplate(region.data);
+       //Final should be:
+       //regionMapper[region.regionName] = _.pluck(region.data, 'view');
+-      regionMapper[region.regionName] = _.map(region.data, function(moduleData,key){
++      regionMapper[region.regionName] = _.map(region.data, _.bind(function(moduleData,key){
+         return {
+           name: moduleData.name,
+           key:key,
+-          route: moduleData.routeAssociated
++          route: moduleData.routeAssociated,
++          routePattern: this.routeToRegExp(moduleData.routeAssociated)
+         };
+-      });
++      }, this));
+     };
+ 
+     this.getRegionModuleByName = function(moduleName){
+@@ -32,18 +33,58 @@
+ 
+     //TODO DRY
+     this.findModuleByQueryString = function(queryString){
+-      var regionName = '', moduleFound = null;
++      var match = '', moduleFound = null;
++      queryString = queryString.replace('?','');
+       _.every(regionMapper, function(region,key){
+         //_.findWhere([{a:1}, {a:2},{a:2}], {a:2}); Underscore 1.4.4
+         moduleFound = _.find(region, function(module){
+-          return '?'+module.route === queryString;
++          match = module.routePattern.exec(queryString);
++          return match? match.length: null;
+         });
+-        return moduleFound? (regionName =key,false):true;
++        return moduleFound? (moduleFound.param = match[1], false):true;
++        //return moduleFound? moduleFound.param = 1:3;
+       });
+-      moduleFound? moduleFound.regionName = regionName : null;
+       return moduleFound;
+     };
+ 
++
++
++    /**
++     * Builds a user-friendly query string
++     * @string 
++     * @return 
++     */
++    this.buildRouteUrl = function(){
++
++    };
++
++    var optionalParam = /\((.*?)\)/g;
++    var namedParam    = /(\(\?)?:\w+/g;
++    var splatParam    = /\*\w+/g;
++    var escapeRegExp  = /[\-{}\[\]+?.,\\\^$|#\s]/g;
++
++    // Convert a route string into a regular expression, suitable for matching
++    // against the current location hash.
++    this.routeToRegExp = function(route) {
++      route = route.replace(escapeRegExp, '\\$&')
++                   .replace(optionalParam, '(?:$1)?')
++                   .replace(namedParam, function(match, optional){
++                     return optional ? match : '([^\/]+)';
++                   })
++                   .replace(splatParam, '(.*?)');
++      return new RegExp('^' + route + '$');
++    };
++
++    // Given a route, and a URL fragment that it matches, return the array of
++    // extracted decoded parameters. Empty or unmatched parameters will be
++    // treated as `null` to normalize cross-browser behavior.
++    this.extractParameters = function(route, fragment) {
++      var params = route.exec(fragment).slice(1);
++      return _.map(params, function(param) {
++        return param ? decodeURIComponent(param) : null;
++      });
++    };
++
+   };
+   return RegionHandler;
+ });
+\ No newline at end of file
