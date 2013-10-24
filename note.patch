@@ -1,818 +1,187 @@
-Index: indexDR.html
+Index: Views/Default/FinancialForm/evaluation/_FinancialFormEvaluation.cshtml
 ===================================================================
---- indexDR.html	(revision 0)
-+++ indexDR.html	(working copy)
-@@ -0,0 +1,84 @@
-+﻿<!DOCTYPE html>
-+<html>
-+<head>
-+  <link rel="stylesheet" type="text/css" href="content/reset.css"/>
-+  <link rel="stylesheet" type="text/css" href="content/Site.css"/>
-+  <link rel="stylesheet" type="text/css" href="Content/bootstrap.custom.css"/>
-+  <link rel="stylesheet" type="text/css" href="Content/toastr.css"/>
-+  <link rel="stylesheet" type="text/css" href="Content/skins/square/green.css"/>
-+  
-+  <script type="text/javascript">
-+  window.DR = {};
-+  DR.constants = {
-+      appUrl: '/',
-+      appRootUrl: '/',
-+      employeeImagesUrl: '@*Url.Content(Configuration.Current.EmployeeImageUrl)*@',
-+      bulkEmployeeImagesUrl: '@*Url.Content(Configuration.Current.BulkEmployeeImageUrl)*@'
-+  };
-+  var isAdmin = false;
+--- Views/Default/FinancialForm/evaluation/_FinancialFormEvaluation.cshtml	(revision 10590)
++++ Views/Default/FinancialForm/evaluation/_FinancialFormEvaluation.cshtml	(working copy)
+@@ -2,9 +2,13 @@
+ @{
+     Layout = null;
+ }
++<link href="Content/themes/base/jquery.ui.all.css" rel="stylesheet" type="text/css" />  
++<!-- 
++    $('.financialForm').tabs()
++-->
+ <section class="financialForm" data-bind="with: financialForm">
+-    
+-    <article id="stepTwo">
 +
-+function getParameterByName(name) {
-+    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-+        results = regex.exec(location.search);
-+    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-+}
-+isAdmin = getParameterByName('isAdmin')== 'true';
++    <!--article id="stepTwo">
+         <h5>Section Name</h5>
+         <div class="columns">
+             <h6>@StringResources.lbl_financial_users_fields</h6>
+@@ -58,8 +62,166 @@
+             </label>
+             
+         </div>
++    </article-->
++    <ul>
++      <li><a href="#stepOne">Loss Type</a></li>
++      <li><a href="#stepTwo">Cash Income</a></li>
++      <li><a href="#stepThree">Dependants</a></li>
++    </ul>
++    <article data-bind="with: LossType" id="stepOne">
++        <h5>Section Name</h5>
++        <div class="columns">
++            <h6>Subsection Title</h6>
++            <label>Loss type
++                <span>Type</span>
++            </label>
++            <label>Currently Residing at
++                <span>ResidenceTypeId</span>
++            </label>
++            Has Insurance
++            <label class="iCheckRadio">
++                <input type="radio" value="yes" name="hasInsurance" data-bind="prettyIcheckRadio: {selectedValue: null}" />Yes
++            </label>
++            
++            <label>Insurance Type
++                <span>Insurance for house</span>
++            </label>
++            
++            <label class="sSize">What was your housing situation prior to disaster?</label>
++            <textarea data-bind="value: HousingSituation"></textarea>
++            
++            <!--div data-bind="visible: carLossTypeWasSelected">
++                <label>Auto Insurance</label>
++                <select data-bind="value: chosenAutoInsurance">
++                    <option value="">Select one</option>
++                    <option value="true">Yes</option>
++                    <option value="false">No</option>
++                </select>
++                <div data-bind="visible: chosenAutoInsurance() == 'true'?true:false">
++                    <label>Insurance TBD</label>
++                    <input type="text" name="insurancetbd"/>
++                </div>
++                <label>Drivable</label>
++                <select data-bind="value: chosenDrivable">
++                    <option value="">Select one</option>
++                    <option value="true">Yes</option>
++                    <option value="false">No</option>
++                </select>
 +
-+  var appViewModel = isAdmin? 'AppViewModelAdminUser' : 'AppViewModelRegularUser';
-+  </script>
-+  <!--script data-main="js/main.js" src="js/lib/require.js"></script-->
-+  <script src="Scripts/lib/jquery-1.8.3.js"></script>
-+  <script src="Scripts/lib/knockout-2.2.1.debug.js"></script>
-+  
-+  <script src="Scripts/lib/underscore.js"></script>
-+  <script src="Scripts/lib/jquery-ui-1.9.2.custom.min.js"></script>
-+  <!-- Local load-->
-+  <script type="text/javascript" src="Scripts/lib/bootstrap.js"></script>
-+  <script src="Scripts/lib/infuser.js"></script>
-+  <script src="Scripts/lib/amplify.js"></script>
-+  <script src="Scripts/lib/toastr.js"></script>
-+  
-+  <script type="text/javascript" src="Scripts/lib/bootbox.min.js"></script>
-+  <script src="Scripts/lib/activity-indicator.js"></script>
-+  <!-- -->
-+  <!-- This lib will support external template instead of script tag tempaltes-->
-+  <script src="Scripts/lib/koExternalTemplateEngine.js"></script>
-+  <script src="Scripts/lib/TrafficCop.js"></script>
-+  <script src="Scripts/lib/knockout.validation-AMD.js"></script>
-+  <script type="text/javascript" src="Scripts/jquery.icheck.min.js"></script>
-+  <script type="text/javascript" src="Scripts/lib/jquery.numeric.js"></script>
-+  <script src="Scripts/lib/jquery.placeholder.js"></script>
-+  <script src="Scripts/lib/jquery.history.js"></script>
-+  <!--script src="Scripts/jquery.ba-bbq.js"></script-->
-+  
-+
-+  <script data-main="Scripts/initAppAdmin.js" src="Scripts/lib/require.js"></script>
-+  <script src="Scripts/main.js"></script>
-+
-+  <script type="text/javascript">
-+  define('ko', function(){return ko;});
-+  
-+  /* This value must be retrieved from back-end*/
-+  
-+
-+  /*$(document).ready(function () {  
-+    require(['ko', 'applicationManager/SingletonAppViewModel'], function (ko, SingletonAppViewModel) {
-+      var vm = SingletonAppViewModel.getInstance();
-+      ko.applyBindings(vm, $('#mainContainer').get(0));
-+      //vm.loadPage();
-+      vm.initialize();
-+    });
-+  })*/
-+  </script>
-+</head>
-+<body>
-+
-+  <div id="mainContainer">
-+    <header data-bind="template: regions.headerTemplate">
-+    </header>
-+    <section data-bind="template: regions.mainContentTemplate">
-+    </section>
-+  </div>
-+
-+</body>
-Index: indexDRFullShim.html
-===================================================================
---- indexDRFullShim.html	(revision 0)
-+++ indexDRFullShim.html	(working copy)
-@@ -0,0 +1,70 @@
-+﻿<!DOCTYPE html>
-+<html>
-+<head>
-+  <link rel="stylesheet" type="text/css" href="content/reset.css"/>
-+  <link rel="stylesheet" type="text/css" href="content/Site.css"/>
-+  <link rel="stylesheet" type="text/css" href="Content/bootstrap.custom.css"/>
-+  <link rel="stylesheet" type="text/css" href="Content/toastr.css"/>
-+  <link rel="stylesheet" type="text/css" href="Content/skins/square/green.css"/>
-+  
-+  <script type="text/javascript">
-+  window.DR = {};
-+  DR.constants = {
-+      appUrl: '/',
-+      employeeImagesUrl: '@*Url.Content(Configuration.Current.EmployeeImageUrl)*@',
-+      bulkEmployeeImagesUrl: '@*Url.Content(Configuration.Current.BulkEmployeeImageUrl)*@'
-+  };
-+  var isAdmin = false;
-+
-+function getParameterByName(name) {
-+    name = name.replace(/[\[]/, "\\\[").replace(/[\]]/, "\\\]");
-+    var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
-+        results = regex.exec(location.search);
-+    return results == null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
-+}
-+isAdmin = getParameterByName('isAdmin')== 'true';
-+
-+  var appViewModel = isAdmin? 'AppViewModelAdminUser' : 'AppViewModelRegularUser';
-+  </script>
-+  <!--script data-main="js/main.js" src="js/lib/require.js"></script-->
-+  <!--script src="Scripts/lib/jquery-1.8.3.js"></script>
-+  <script src="Scripts/lib/knockout-2.2.1.debug.js"></script>
-+  
-+  <script src="Scripts/lib/underscore.js"></script>
-+  <script src="Scripts/lib/jquery-ui-1.9.2.custom.min.js"></script-->
-+  <!-- Local load-->
-+  <!--script type="text/javascript" src="Scripts/lib/bootstrap.js"></script>
-+  <script src="Scripts/lib/infuser.js"></script>
-+  <script src="Scripts/lib/amplify.js"></script>
-+  <script src="Scripts/lib/toastr.js"></script>
-+  
-+  <script type="text/javascript" src="Scripts/lib/bootbox.min.js"></script>
-+  <script src="Scripts/lib/activity-indicator.js"></script-->
-+  <!-- -->
-+  <!-- This lib will support external template instead of script tag tempaltes-->
-+  <!--script src="Scripts/lib/koExternalTemplateEngine.js"></script>
-+  <script src="Scripts/lib/TrafficCop.js"></script>
-+  <script src="Scripts/lib/knockout.validation-AMD.js"></script>
-+  <script type="text/javascript" src="Scripts/jquery.icheck.js"></script>
-+  <script type="text/javascript" src="Scripts/lib/jquery.numeric.js"></script>
-+  <script src="Scripts/lib/jquery.placeholder.js"></script-->
-+  
-+
-+  <script data-main="Scripts/initAppFullShim.js" src="Scripts/lib/require.js"></script>
-+  <!--script src="Scripts/main.js"></script-->
-+
-+  <script type="text/javascript">
-+  //define('ko', function(){return ko;});
-+  
-+  </script>
-+</head>
-+<body>
-+
-+  <div id="mainContainer">
-+    <header data-bind="template: regions.headerTemplate">
-+    </header>
-+    <section data-bind="template: regions.mainContentTemplate">
-+    </section>
-+  </div>
-+
-+</body>
-Index: Scripts/app/applicationManager/AppViewModelAdminUser.js
-===================================================================
---- Scripts/app/applicationManager/AppViewModelAdminUser.js	(revision 10500)
-+++ Scripts/app/applicationManager/AppViewModelAdminUser.js	(working copy)
-@@ -4,11 +4,11 @@
-     this.isLoading = ko.observable(true);
-     AppViewModelBaseUser.call(this);
-     var headerRegions = {
--      templateUrl: DR.constants.appUrl + 'Default',
-+      templateUrl: DR.constants.appUrl + 'Views/Default',
-       regionName: 'headerTemplate',
-       data: [{
-         name: 'HeaderArea',
--        view: 'HeaderAdminArea',
-+        view: '_HeaderArea.cshtml',
-         routeAssociated: '',
-         module: 'Viewmodels/headerArea',
-         onModuleLoaded: function (resolveData, Module) {
-@@ -17,11 +17,11 @@
-       }]
-     };
-     var mainContentRegions = {
--      templateUrl: DR.constants.appUrl + 'Default',
-+      templateUrl: DR.constants.appUrl + 'Views/Default',
-       regionName: 'mainContentTemplate',
-       data: [{
-         name: 'DisasterSelectionListArea',
--        view: 'DisasterSelectionListAdminArea',
-+        view: '_DisasterSelectionListArea.cshtml',
-         routeAssociated: '',
-         module: 'Viewmodels/disasterSelectionListAdminArea',
-         onModuleLoaded: function (resolveData, Module) {
-@@ -57,7 +57,7 @@
-       },
-       {
-         name: 'FinancialForm',
--        view: 'FinancialForm',
-+        view: 'financialForm/request/_FinancialForm.cshtml',
-         routeAssociated: 'request',
-         module: 'Viewmodels/financialForm/request/financialForm',
-         onModuleLoaded: _.bind(function (resolveData, Module) {
-@@ -66,7 +66,7 @@
-       },
-       {
-         name: 'UserManagement',
--        view: 'UserPermission',
-+        view: 'Administration/_UserPermission.cshtml',
-         routeAssociated: 'users',
-         module: 'Viewmodels/Administration/user',
-         onModuleLoaded: _.bind(function (resolveData, user) {
-@@ -79,7 +79,7 @@
-       },
-       {
-         name: 'FinancialFormList',
--        view: 'FinancialFormList',
-+        view: 'financialForm/evaluation/_FinancialFormList.cshtml',
-         routeAssociated: 'form',
-         module: 'Viewmodels/financialForm/evaluation/financialFormList',
-         onModuleLoaded: _.bind(function (resolveData, Module) {
-@@ -88,7 +88,7 @@
-       },
-       {
-         name: 'FinancialFormEvaluation',
--        view: 'FinancialFormEvaluation',
-+        view: 'financialForm/evaluation/_FinancialFormEvaluation.cshtml',
-         routeAssociated: 'form/:id',
-         module: 'Viewmodels/financialForm/evaluation/financialFormEvaluation',
-         onModuleLoaded: _.bind(function (resolveData, Module) {
-Index: Scripts/app/applicationManager/AppViewModelBaseUser.js
-===================================================================
---- Scripts/app/applicationManager/AppViewModelBaseUser.js	(revision 10500)
-+++ Scripts/app/applicationManager/AppViewModelBaseUser.js	(working copy)
-@@ -1,4 +1,5 @@
--﻿define(['ko', 'applicationManager/RegionHandler'], function (ko, RegionHandler) {
-+﻿//define(['ko', 'applicationManager/RegionHandler'], function (ko, RegionHandler) {
-+define(['ko', 'applicationManager/RegionHandler', 'underscore', 'History'], function (ko, RegionHandler, _, History) {
-   var AppViewModelRegularUser = function(){
++            </div-->
++            <label class="sSize">Describe your loss with regards to damage?</label>
++            <textarea data-bind="value: DescribeLoss"></textarea>            
++            
++        </div>
++        <div class="columns">
++            <h6>Subsection Title</h6>
++            
++                <label class="sSize">Choose one o several Loss category to calculate the loss amount</label>
++                <table>
++                    <thead>
++                        <tr>
++                            <td>Loss Category</td>
++                            <td class="fixed">Estimation Amount</td>
++                        </tr>
++                    </thead>
++                    <tbody>
++                        <!-- ko foreach: LossCategoryIds -->
++                        <tr>
++                            <td><input type="checkbox" data-bind="value:Amount,prettyIcheckCheckbox: {selectedValue:$parent.itemCategoryList}" /><label data-bind="text: Name"></label></td>
++                            <td data-bind="text: Amount"></td>
++                        </tr>
++                        <!-- /ko -->
++                        <tr class="tFooter">
++                            <td>Total Estimated Loss</td>
++                            <td>totalEstimatedLoss</td>
++                        </tr>
++                    </tbody>
++                </table>
++            
++        </div>
++        <div class="actions formSteps">
++            <a href="#stepTwo" class="stepButton">Next</a>
++        </div>
+     </article>
  
-     this.params = null;
-Index: Scripts/app/applicationManager/AppViewModelRegularUser.js
-===================================================================
---- Scripts/app/applicationManager/AppViewModelRegularUser.js	(revision 10500)
-+++ Scripts/app/applicationManager/AppViewModelRegularUser.js	(working copy)
-@@ -3,11 +3,11 @@
-     this.isLoading = ko.observable(true);
-     AppViewModelBaseUser.call(this);
-     var headerRegions = {
--      templateUrl: DR.constants.appUrl + 'Default',
-+      templateUrl: DR.constants.appUrl + 'Views/Default',
-       regionName: 'headerTemplate',
-       data: [{
-         name: 'HeaderArea',
--        view: 'HeaderArea',
-+        view: '_HeaderArea.cshtml',
-         routeAssociated: '',
-         module: 'Viewmodels/HeaderArea',
-         onModuleLoaded: function (resolveData, Module) {
-@@ -16,11 +16,11 @@
-       }]
-     };
-     var mainContentRegions = {
--      templateUrl: DR.constants.appUrl + 'Default',
-+      templateUrl: DR.constants.appUrl + 'Views/Default',
-       regionName: 'mainContentTemplate',
-       data: [{
-         name: 'DisasterSelectionListArea',
--        view: 'DisasterSelectionListArea',
-+        view: '_DisasterSelectionListArea.cshtml',
-         routeAssociated: '',
-         module: 'Viewmodels/disasterSelectionListArea',
-         onModuleLoaded: function (resolveData, Module) {
-@@ -56,7 +56,7 @@
-       },
-       {
-         name: 'FinancialForm',
--        view: 'FinancialForm',
-+        view: 'FinancialForm/_FinancialForm.cshtml',
-         routeAssociated: 'request',
-         module: 'Viewmodels/financialForm/request/FinancialForm',
-         onModuleLoaded: _.bind(function (resolveData, Module) {
-Index: Scripts/app/dataservice.js
-===================================================================
---- Scripts/app/dataservice.js	(revision 10500)
-+++ Scripts/app/dataservice.js	(working copy)
-@@ -8,7 +8,7 @@
-             }
-             return data;
-         };
--        function performCall(controller, resourceId, data) {
-+        function performCall(controller, resourceId, data, backendResponse) {
-             //console.log('dataservice (that): ', that);
-             data = data || {};
-             //data.id = data.id || '';
-@@ -17,7 +17,7 @@
-                 //console.log(that);
-                 //console.log('dataservice (action): ',action);
-                 data.controller = controller;
--                amplify.request({
-+                /*amplify.request({
-                     resourceId: resourceId,
-                     data: data,
-                     success: function (data) {
-@@ -27,13 +27,14 @@
-                     error: function (err) {
-                         def.reject(err);
-                     }
--                });
-+                });*/
-+                def.resolve(backendResponse);
-             }).promise();
-         }
--        function callAction(controller, action, resourceId, data) {
-+        function callAction(controller, action, resourceId, data, backendResponse) {
-             data = data || {};
-             data.action = action;
--            return performCall(controller, resourceId, data);
-+            return performCall(controller, resourceId, data, backendResponse);
-         };
- 
-         function call(controller, resourceId, data) {
-@@ -75,11 +76,11 @@
-             };
- 
-             extensions = extensions || {};
--            privates.extend = function (prop, action, resource) {
-+            privates.extend = function (prop, action, resource, backendResponse) {
-                 //console.log(prop);
-                 that[prop] = function (data) {
-                     //console.log(action, resource);
--                    return callAction(that.controller, action, resource, objetizeId(data));
-+                    return callAction(that.controller, action, resource, objetizeId(data), backendResponse);
-                 };
-             };
-             var wasGetAction = false;
-@@ -88,7 +89,7 @@
-             var wasDelAction = false;
- 
-             for (ext in extensions) {
--                privates.extend(ext, extensions[ext].action, extensions[ext].resource);
-+                privates.extend(ext, extensions[ext].action, extensions[ext].resource, extensions[ext].backendResponse);
- 
-                 wasGetAction = !wasGetAction ? extensions[ext].resource == 'getaction' : true;
-                 wasPutAction = !wasPutAction ? extensions[ext].resource == 'putaction' : true;
-@@ -119,7 +120,16 @@
-         });
- 
-         var searchDS = getRepository('Search', {
--            SearchEmployees: { action: 'SearchEmployees', resource: 'getaction' },
-+            SearchEmployees: { action: 'SearchEmployees', resource: 'getaction',
-+            backendResponse:[
-+                {FullName: 'Jamie Dimon0', Sid:1},
-+                {FullName: 'Jamie Dimon1', Sid:2},
-+                {FullName: 'Jamie Dimon2', Sid:3},
-+                {FullName: 'Jamie Dimon3', Sid:4},
-+                {FullName: 'Jamie Dimon4', Sid:5},
-+                {FullName: 'Jamie Dimon5', Sid:6},
-+            ]
-+            },
-             SearchUsers: { action: 'SearchUsers', resource: 'getaction' },
-             SearchEmployeesForUserLog: { action: 'SearchEmployeesForUserLog', resource: 'getaction' }
-         });
-@@ -188,7 +198,11 @@
-         });
- 
-         var userDS = getRepository('User', {
--            GetLoggedEmployee: { action: 'GetLoggedEmployee', resource: 'getaction' },
-+            GetLoggedEmployee: { action: 'GetLoggedEmployee', resource: 'getaction',
-+                backendResponse: {
-+                  FullName: 'Jamie Dimon'
-+                }
-+             },
-             Get: { action: 'Get', resource: 'getaction' },
-             ChangeUser: { action: 'PutChangeUser', resource: 'putaction' },
-             ActivateUser: { action: 'PutActivateUser', resource: 'putaction' },
-@@ -305,11 +319,86 @@
-         };
-         /**/
-         var disasterDS = getRepository('Disaster', {
--            GetDisasterCategories: { action: 'GetDisasterCategories', resource: 'getaction' }
-+            GetDisasterCategories: { action: 'GetDisasterCategories', resource: 'getaction',
-+                backendResponse : {
-+                    Fires: [
-+                      {Description: 'Fire Description1',Name:'It1', Id:1},
-+                      {Description: 'Fire Description2',Name:'It1', Id:1},
-+                      {Description: 'Fire Description3',Name:'It1', Id:1},
-+                      {Description: 'Fire Description4',Name:'It1', Id:1},
-+                      {Description: 'Fire Description5',Name:'It1', Id:1},
-+                      {Description: 'Fire Description6',Name:'It1', Id:1}
-+                    ],
-+                    Floods: [
-+                      {Description: 'Flood Description1',Name:'It1', Id:1},
-+                      {Description: 'Flood Description2',Name:'It1', Id:1},
-+                      {Description: 'Flood Description3',Name:'It1', Id:1},
-+                      {Description: 'Flood Description4',Name:'It1', Id:1},
-+                      {Description: 'Flood Description5',Name:'It1', Id:1},
-+                      {Description: 'Flood Description6',Name:'It1', Id:1}
++    <article data-bind="with: CashIncome" id="stepTwo">
++        <h5>Section Name</h5>
++        <div class="columns">
++            <h6>Cash income</h6>
++            <label>Monthly Net income
++                <span>MontlyNetIncome</span>
++            </label>
++            
++            <label>Cash Assistance Received (if any)
++                <span>CashAssistanceReceived</span>
++            </label>
++            
++        </div>
++        <div class="columns">
++            <h6>Expenses</h6>
++            <label>Monthly Mortgage / Rent
++                <span>MontlyMortgageRent</span>
++            </label>
++            
++            <label>Car Payment
++                <span>CarPayment</span>
++            </label>
++            
++            <label>Utilities
++                <span>Utilities</span>
++            </label>
++            
++            <label>Food / Transportation
++                <span>FoodTransportation</span>
++            </label>
++            
++            <label>Total estimated expenses</label>
++            <span >totalEstimatedExpenses</span>
++        </div>
++        <div class="actions formSteps">
++            <a href="#stepOne" class="stepButton">Previous</a>
++            <a href="#stepThree" class="stepButton">Next</a>
++        </div>
++    </article>
 +
-+                    ],
-+                    Tornados: [
-+                      {Description: 'Tornados Description1',Name:'It1', Id:1},
-+                      {Description: 'Tornados Description2',Name:'It1', Id:1},
-+                      {Description: 'Tornados Description3',Name:'It1', Id:1},
-+                      {Description: 'Tornados Description4',Name:'It1', Id:1},
-+                      {Description: 'Tornados Description5',Name:'It1', Id:1},
-+                      {Description: 'Tornados Description6',Name:'It1', Id:1}
-+                    ]
-+                }
-+             }
-         });
-         var financialFormDS = getRepository('FinancialForm', {
--            GetLastestFinancialForms: { action: 'Get', resource: 'getaction' },
--            GetMasterData: { action: 'GetMasterData', resource: 'getaction' },
-+            GetLastestFinancialForms: { action: 'Get', resource: 'getaction' ,
-+                backendResponse: [
-+                    {
-+                      EmployeeName: 'Jamie Dimonfjdio ',
-+                      DisasterName: 'Fire',
-+                      DisasterType: 'Fire on Houston',
-+                      SubmitionDate: '',
-+                      SuggestedAmount: 100,
-+                      Status: 'Pending'
-+                    }
-+                  ]
-+            },
-+            GetMasterData: { action: 'GetMasterData', resource: 'getaction',
-+                backendResponse: {
-+                    ResidentTypes: [
-+                        {Id:1, Name:'Own Owner'},
-+                        {Id:2, Name:'Family Owner'},
-+                        {Id:3, Name:'Renter'}
-+                    ],
-+                    Insurances: [
-+                        {Id:1, Name: 'Flood'},
-+                        {Id:2, Name: 'Earthquake'},
-+                        {Id:3, Name: 'Fire'},
-+                        {Id:4, Name: 'Other'},
-+                    ],
-+                    LossCategoriesCar:[
-+                        {Type:0, Name:'Cat1', Amount:100},
-+                        {Type:0, Name:'Cat2', Amount:200},
-+                        {Type:0, Name:'Cat3', Amount:300},
-+                        {Type:1, Name:'Cat4', Amount:400},
-+                        {Type:1, Name:'Cat5', Amount:500},
-+                        {Type:2, Name:'Cat6', Amount:600}
-+                    ],
-+                    LossCategoriesHouse: [
-+                        {Type:0, Name:'Cat7', Amount:700},
-+                        {Type:0, Name:'Cat8', Amount:800},
-+                        {Type:0, Name:'Cat9', Amount:900},
-+                        {Type:1, Name:'Cat1', Amount:100},
-+                        {Type:1, Name:'Cat1', Amount:200},
-+                        {Type:1, Name:'Cat1', Amount:300},
-+                        {Type:1, Name:'Cat1', Amount:400},
-+                        {Type:2, Name:'Cat1', Amount:500},
-+                        {Type:2, Name:'Cat1', Amount:600},
-+                        {Type:2, Name:'Cat1', Amount:700},
-+                        {Type:2, Name:'Cat1', Amount:800},
-+                        {Type:2, Name:'Cat1', Amount:900}
-+                    ],
-+                }
-+            },
-             SaveFinancialForm: { action:'PostFinancialForm', resource:'postaction'},
-             SubmitFinancialForm: { action:'PostSubmit', resource:'postaction'},
-             GetByEmployeeSid: { action:'GetByEmployeeSid', resource: 'getaction'}
-@@ -329,6 +418,17 @@
-         var lossTypeCarDS = getRepository('LossTypeCar', {
-             SaveLossTypeCar: { action: 'PostLossTypeCar', resource: 'postaction' }
-         });
-+        //Extra
-+        var Role = getRepository('Role', {
-+            Get: { action: 'getRole', resource: 'getactions', backendResponse:
-+            [
-+                        {Description: 'faqManager', Id: 1},
-+                        {Description: 'Admin', Id: 2},
-+                        {Description: 'employee', Id: 3},
-+                        {Description: 'training', Id: 4}
-+                    ]
-+             }
-+        });
-         /**/
- 
-         var module = {
-@@ -339,7 +439,8 @@
-             rating: ratingDS,
-             assignmentRule: assignmentRuleDS,
-             ratingOption: ratingOptionDS,
--            role: getRepository('Role'),
-+            //role: getRepository('Role'),
-+            role: Role,
-             businessProperties: getRepository('BusinessProperty'),
-             uploadedFile: uploadedFileDS,
-             search: searchDS,
-Index: Scripts/app/ViewModels/Administration/user.js
-===================================================================
---- Scripts/app/ViewModels/Administration/user.js	(revision 10500)
-+++ Scripts/app/ViewModels/Administration/user.js	(working copy)
-@@ -1,4 +1,4 @@
--﻿define(['ko', 'toastr', 'dataservice', 'utils', 'viewmodels/templateManager'],
-+﻿define(['ko', 'toastr', 'dataservice', 'utils', 'viewmodels/templateManager', 'jquery.placeholder'],
- function (ko, toastr, dataservice, utils, templateManager) {
-     function getVM(spec, privates) {
-         privates = privates || {};
-Index: Scripts/app/ViewModels/FinancialForm/request/financialForm.js
-===================================================================
---- Scripts/app/ViewModels/FinancialForm/request/financialForm.js	(revision 10500)
-+++ Scripts/app/ViewModels/FinancialForm/request/financialForm.js	(working copy)
-@@ -2,7 +2,7 @@
-         'ViewModels/FinancialForm/request/lossCategory',
-         'ViewModels/FinancialForm/request/financialCategory',
-         'ViewModels/FinancialForm/request/dependantsCategory',
--        'dataservice', 'toastr'],
-+        'dataservice', 'toastr', 'jquery.numeric', 'jquery.placeholder'],
-   function (ko, SingletonAppViewModel, LossCategory, FinancialCategory, DependantsCategory, dataservice, toastr) {
-   var FinancialForm = function(data){
- 
-Index: Scripts/initAppFullShim.js
-===================================================================
---- Scripts/initAppFullShim.js	(revision 0)
-+++ Scripts/initAppFullShim.js	(working copy)
-@@ -0,0 +1,30 @@
-+﻿/*require(['ko', 'applicationManager/SingletonAppViewModel'], function (ko, SingletonAppViewModel) {
-+  var vm = SingletonAppViewModel.getInstance(appViewModel);
-+  ko.applyBindings(vm, $('#mainContainer').get(0));
-+  vm.initialize();
-+});*/
++    <article data-bind="with: Dependant" id="stepThree">
++        <h5>Section Name</h5>
++        <div class="columns">
++            <h6>Subsection Title</h6>
++            <label>Number of Dependants
++                <span>NumberOfDependants</span>
++            </label>
++            
++        </div>
++        <div class="columns">
++            <h6>Subsection Title</h6>
++            <label class="sSize">Please describe any special circunstances that might affect your application (persons with disabilities, funeral expenses, foster care children, unemployement?)</label>
++            <textarea data-bind="value: SpecialCircunstances"></textarea>
++        </div>
++        <div class="actions formSteps">
++            <a href="#stepTwo" class="stepButton">Previous</a>
++        </div>
++    </article>
 +
-+/*
-+require(['requireConfigShim', 'requireCustomPlugins'],
-+  function() {
-+    require(['applicationManager/SingletonAppViewModel', 'ko'], function (SingletonAppViewModel, ko) {
-+      var vm = SingletonAppViewModel.getInstance(appViewModel);
-+      ko.applyBindings(vm, $('#mainContainer').get(0));
-+      vm.initialize();
-+    });
-+  }
-+);
++    <article data-bind="with: Evaluation">
++        <h5>Section Name</h5>
++        <div class="columns">
++            
++        </div>
++        <div class="columns">
++            <h6>Subsection Title</h6>
++            <label class="iCheckRadio">
++                @StringResources.lbl_recommended (USD)
++                <input type="text" name="disabilities" data-bind="value: RecommendedAmount" disabled="disabled"/>
++            </label>
++            <label class="iCheckRadio">
++                @StringResources.lbl_approved (USD)
++                <input type="text" name="disabilities" placeholder="@StringResources.txt_enter" data-bind="value: ApprovedAmount"/>
++            </label>
++            
++        </div>
++    </article>
 +
-+*/
-+require(['requireConfigShim'],
-+  function() {
-+    require(['../requireCustomPlugins'], function(){
-+      require(['applicationManager/SingletonAppViewModel', 'ko'], function (SingletonAppViewModel, ko) {
-+        var vm = SingletonAppViewModel.getInstance('admin');
-+        ko.applyBindings(vm, $('#mainContainer').get(0));
-+        vm.initialize();
-+      });
-+    });
-+    
-+  }
-+);
-\ No newline at end of file
-Index: Scripts/lib/infuser.js
-===================================================================
---- Scripts/lib/infuser.js	(revision 10500)
-+++ Scripts/lib/infuser.js	(working copy)
-@@ -1,4 +1,4 @@
--(function($, global, undefined) {
-+(function($, global, undefined) {
- /*
-     infuser.js
-     Author: Jim Cowart
-@@ -184,5 +184,5 @@
-             templateOptions.postRender(targetElement);
-         });
-     }
--};
-+};
- global.infuser = infuser; })(jQuery, window);
-\ No newline at end of file
-Index: Scripts/lib/knockout.validation-AMD.js
-===================================================================
---- Scripts/lib/knockout.validation-AMD.js	(revision 10500)
-+++ Scripts/lib/knockout.validation-AMD.js	(working copy)
-@@ -15,7 +15,7 @@
-         factory(require("knockout"), exports);
-     } else if (typeof define === "function" && define["amd"]) {
-         // AMD anonymous module with hard-coded dependency on "knockout"
--        define(["knockout", "exports"], factory);
-+        define(["ko", "exports"], factory);
-     } else {
-         // <script> tag: use the global `ko` object, attaching a `mapping` property
-         factory(ko, ko.validation = {});
-Index: Scripts/lib/koExternalTemplateEngine-amd.js
-===================================================================
---- Scripts/lib/koExternalTemplateEngine-amd.js	(revision 0)
-+++ Scripts/lib/koExternalTemplateEngine-amd.js	(working copy)
-@@ -0,0 +1,102 @@
-+
-+// Knockout External Template Engine
-+// Author: Jim Cowart
-+// License: MIT (http://www.opensource.org/licenses/mit-license)
-+// Version 2.0.4
-+
-+// This is the AMD style module version of the KO External Template Engine
-+// If you need the standard 'js lib' version, please go to https://github.com/ifandelse/Knockout.js-External-Template-Engine
-+
-+define(['ko','jquery', 'infuser'], function(ko, jQuery, infuser){
-+
-+	var ExternalTemplateSource = function(templateId, options) {
-+	    var self = this, origAfterRender;
-+	    self.templateId = templateId;
-+	    self.loaded = false;
-+	    self.template = ko.observable(infuser.defaults.useLoadingTemplate ? infuser.defaults.loadingTemplate.content : undefined);
-+	    self.template.data = {};
-+	    self.options = ko.utils.extend({},options);
-+	    self.options.templateId = templateId;
-+	    if(self.options && self.options.afterRender) {
-+	        origAfterRender = self.options.afterRender;
-+	        self.options.afterRender = function() {
-+	            if(self.loaded) {
-+	                origAfterRender.apply(self.options, arguments);
-+	            }
-+	        }
-+	    }
-+	};
-+	
-+	ko.utils.extend(ExternalTemplateSource.prototype, {
-+	    data: function(key, value) {
-+	        if (arguments.length === 1) {
-+	            if(key === "precompiled") {
-+	                this.template();
-+	            }
-+	            return this.template.data[key];
-+	        }
-+	        this.template.data[key] = value;
-+	    },
-+	
-+	    text: function(value) {
-+	        if (!this.loaded) {
-+	           this.getTemplate();
-+	        }
-+	
-+	        if (arguments.length === 0) {
-+	            return this.template();
-+	        } else {
-+	           this.template(arguments[0]);
-+	        }
-+	    },
-+	
-+	    getTemplate: function() {
-+	        var self = this;
-+	        infuser.get(self.options, function(tmpl) {
-+	            self.data("precompiled",null);
-+	            self.template(tmpl);
-+	            self.loaded = true;
-+	        });
-+	    }
-+	});
-+	var KoExternalTemplateEngine = function(koEngineType) {
-+	    var engine = koEngineType ? new koEngineType() : new ko.nativeTemplateEngine();
-+	    engine.templates = {};
-+	    engine.makeTemplateSource = function(template, bindingContext, options) {
-+	        // Named template
-+	        if (typeof template == "string") {
-+	            var elem = document.getElementById(template);
-+	            if (elem)
-+	                return new ko.templateSources.domElement(elem);
-+	            else {
-+	                if(!engine.templates[template]) {
-+	                    engine.templates[template] = new ExternalTemplateSource(template, options);
-+	                }
-+	                return engine.templates[template];
-+	            }
-+	        }
-+	        else if ((template.nodeType == 1) || (template.nodeType == 8)) {
-+	            // Anonymous template
-+	            return new ko.templateSources.anonymousTemplate(template);
-+	        }
-+	        
-+	    };
-+	
-+	    engine.renderTemplate = function (template, bindingContext, options) {
-+	        var templateSource = engine.makeTemplateSource(template, bindingContext, options);
-+	        return engine.renderTemplateSource(templateSource, bindingContext, options);
-+	    };
-+	
-+	    return engine;
-+	};
-+	
-+	ko.KoExternalTemplateEngine = KoExternalTemplateEngine;
-+	
-+	if (jQuery['tmpl'] && jQuery['tmpl']['tag']['tmpl']['open'].toString().indexOf('__') >= 0) {
-+	    ko.setTemplateEngine(new KoExternalTemplateEngine(ko.jqueryTmplTemplateEngine));
-+	}
-+	else {
-+	    ko.setTemplateEngine(new KoExternalTemplateEngine());
-+	}
-+
-+});
-\ No newline at end of file
-Index: Scripts/requireConfigShim.js
-===================================================================
---- Scripts/requireConfigShim.js	(revision 0)
-+++ Scripts/requireConfigShim.js	(working copy)
-@@ -0,0 +1,54 @@
-+﻿define(function() {
-+//  'use strict';
-+  require.config({
-+    baseUrl: DR.constants.appUrl + 'Scripts/app',
-+    //path aliases for loaded scripts
-+    paths: {
-+      'jquery' : '../lib/jquery-1.8.3',
-+      'underscore' : '../lib/underscore',
-+      'ko' : '../lib/knockout-2.2.1.debug',
-+      'toastr': '../lib/toastr',
-+      'History': '../lib/jquery.history',
-+      'amplify': '../lib/amplify',
-+      'TrafficCop': '../lib/TrafficCop',
-+      'infuser': '../lib/infuser',
-+      'koExternalTemplateEngine': '../lib/koExternalTemplateEngine-amd',
-+      'knockout.validation-AMD': '../lib/knockout.validation-AMD',
-+      'toastr': '../lib/toastr',
-+      'jquery.numeric': '../lib/jquery.numeric',
-+      'jquery.placeholder': '../lib/jquery.placeholder'
-+    },
-+
-+    //load script's dependencies in correct order &
-+    //wraps non-AMD scripts into AMD-modules
-+    shim: {
-+      'underscore' : {
-+        exports: '_'
-+      },
-+      'toastr': {
-+        deps: ['jquery']
-+      },
-+      'History': {
-+        deps: ['jquery'],
-+        exports: 'History'
-+      },
-+      'amplify': {
-+        deps: ['jquery'],
-+        exports:'amplify'
-+      },
-+      'TrafficCop': {
-+        deps: ['jquery']
-+      },
-+      'infuser': {
-+        deps: ['jquery', 'TrafficCop'],
-+        exports: 'infuser'
-+      },
-+      'koExternalTemplateEngine':{
-+        deps: ['ko', 'jquery', 'TrafficCop', 'infuser']
-+      },
-+      'toastr': {
-+        exports: 'toastr'
-+      }
-+    }
-+  });
-+});
-Index: Scripts/requireCustomPlugins.js
-===================================================================
---- Scripts/requireCustomPlugins.js	(revision 0)
-+++ Scripts/requireCustomPlugins.js	(working copy)
-@@ -0,0 +1,59 @@
-+﻿define(['ko.extenders', 'koExternalTemplateEngine', 'amplify', 'infuser', 'knockout.validation-AMD'],
-+    function(fake1, fake, amplify, infuser){
-+    configureAmplify(amplify);
-+    infuser.defaults.templateSuffix = "";
-+    //infuser.defaults.templateUrl = DR.constants.appUrl + "Administration";
-+    //infuser.defaults.useLoadingTemplate = false;
-+    infuser.defaults.loadingTemplate.content = '<div id="ignore" ></div>';
-+});
-+
-+
-+function configureAmplify(amplify) {
-+    //console.log('configuring amplify');
-+    //envelope to pass errors as json instead of text
-+    if (!amplify.request.decoders.appEnvelope) {
-+        amplify.request.decoders.appEnvelope =
-+            function (data, status, xhr, success, error) {
-+                if (xhr.status < 400)
-+                    success(data);
-+                else {
-+                    error($.parseJSON(xhr.responseText), status);
-+                }
-+            };
-+    }
-+    //amplify definitions
-+
-+    //default api
-+    function getSettings(type, relativeUrl) {
-+        return {
-+            url: window.DR.constants.appRootUrl + (relativeUrl || 'Api/{controller}Api/{id}'),
-+            type: type,
-+            dataType: 'json',
-+            decoder: 'appEnvelope'
-+        };
-+    }
-+
-+    if (!amplify.request.resources['get'])
-+        amplify.request.define('get', 'ajax', getSettings('GET'));
-+
-+    if (!amplify.request.resources['post'])
-+        amplify.request.define('post', 'ajax', getSettings('POST'));
-+
-+    if (!amplify.request.resources['put'])
-+        amplify.request.define('put', 'ajax', getSettings('PUT'));
-+
-+    if (!amplify.request.resources['del'])
-+        amplify.request.define('del', 'ajax', getSettings('DELETE'));
-+
-+    if (!amplify.request.resources['getaction'])
-+        amplify.request.define('getaction', 'ajax', getSettings('GET', 'Api/{controller}Api/{action}'));
-+
-+    if (!amplify.request.resources['postaction'])
-+        amplify.request.define('postaction', 'ajax', getSettings('POST', 'Api/{controller}Api/{action}'));
-+
-+    if (!amplify.request.resources['putaction'])
-+        amplify.request.define('putaction', 'ajax', getSettings('PUT', 'Api/{controller}Api/{action}'));
-+
-+    if (!amplify.request.resources['delaction'])
-+        amplify.request.define('delaction', 'ajax', getSettings('DELETE', 'Api/{controller}Api/{action}'));
-+}
-\ No newline at end of file
+     <article>
+         <div class="message valid">
+             <label>@StringResources.lbl_status:</label>
