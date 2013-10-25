@@ -1,187 +1,62 @@
-Index: Views/Default/FinancialForm/evaluation/_FinancialFormEvaluation.cshtml
+Index: Scripts/app/ViewModels/disasterSelectionListAdminArea.js
 ===================================================================
---- Views/Default/FinancialForm/evaluation/_FinancialFormEvaluation.cshtml	(revision 10590)
-+++ Views/Default/FinancialForm/evaluation/_FinancialFormEvaluation.cshtml	(working copy)
-@@ -2,9 +2,13 @@
- @{
-     Layout = null;
- }
-+<link href="Content/themes/base/jquery.ui.all.css" rel="stylesheet" type="text/css" />  
-+<!-- 
-+    $('.financialForm').tabs()
-+-->
- <section class="financialForm" data-bind="with: financialForm">
--    
--    <article id="stepTwo">
-+
-+    <!--article id="stepTwo">
-         <h5>Section Name</h5>
-         <div class="columns">
-             <h6>@StringResources.lbl_financial_users_fields</h6>
-@@ -58,8 +62,166 @@
-             </label>
-             
-         </div>
-+    </article-->
-+    <ul>
-+      <li><a href="#stepOne">Loss Type</a></li>
-+      <li><a href="#stepTwo">Cash Income</a></li>
-+      <li><a href="#stepThree">Dependants</a></li>
-+    </ul>
-+    <article data-bind="with: LossType" id="stepOne">
-+        <h5>Section Name</h5>
-+        <div class="columns">
-+            <h6>Subsection Title</h6>
-+            <label>Loss type
-+                <span>Type</span>
-+            </label>
-+            <label>Currently Residing at
-+                <span>ResidenceTypeId</span>
-+            </label>
-+            Has Insurance
-+            <label class="iCheckRadio">
-+                <input type="radio" value="yes" name="hasInsurance" data-bind="prettyIcheckRadio: {selectedValue: null}" />Yes
-+            </label>
-+            
-+            <label>Insurance Type
-+                <span>Insurance for house</span>
-+            </label>
-+            
-+            <label class="sSize">What was your housing situation prior to disaster?</label>
-+            <textarea data-bind="value: HousingSituation"></textarea>
-+            
-+            <!--div data-bind="visible: carLossTypeWasSelected">
-+                <label>Auto Insurance</label>
-+                <select data-bind="value: chosenAutoInsurance">
-+                    <option value="">Select one</option>
-+                    <option value="true">Yes</option>
-+                    <option value="false">No</option>
-+                </select>
-+                <div data-bind="visible: chosenAutoInsurance() == 'true'?true:false">
-+                    <label>Insurance TBD</label>
-+                    <input type="text" name="insurancetbd"/>
-+                </div>
-+                <label>Drivable</label>
-+                <select data-bind="value: chosenDrivable">
-+                    <option value="">Select one</option>
-+                    <option value="true">Yes</option>
-+                    <option value="false">No</option>
-+                </select>
-+
-+            </div-->
-+            <label class="sSize">Describe your loss with regards to damage?</label>
-+            <textarea data-bind="value: DescribeLoss"></textarea>            
-+            
-+        </div>
-+        <div class="columns">
-+            <h6>Subsection Title</h6>
-+            
-+                <label class="sSize">Choose one o several Loss category to calculate the loss amount</label>
-+                <table>
-+                    <thead>
-+                        <tr>
-+                            <td>Loss Category</td>
-+                            <td class="fixed">Estimation Amount</td>
-+                        </tr>
-+                    </thead>
-+                    <tbody>
-+                        <!-- ko foreach: LossCategoryIds -->
-+                        <tr>
-+                            <td><input type="checkbox" data-bind="value:Amount,prettyIcheckCheckbox: {selectedValue:$parent.itemCategoryList}" /><label data-bind="text: Name"></label></td>
-+                            <td data-bind="text: Amount"></td>
-+                        </tr>
-+                        <!-- /ko -->
-+                        <tr class="tFooter">
-+                            <td>Total Estimated Loss</td>
-+                            <td>totalEstimatedLoss</td>
-+                        </tr>
-+                    </tbody>
-+                </table>
-+            
-+        </div>
-+        <div class="actions formSteps">
-+            <a href="#stepTwo" class="stepButton">Next</a>
-+        </div>
-     </article>
+--- Scripts/app/ViewModels/disasterSelectionListAdminArea.js	(revision 10643)
++++ Scripts/app/ViewModels/disasterSelectionListAdminArea.js	(working copy)
+@@ -6,7 +6,12 @@
+     this.financialFormList = ko.observableArray();
+     
+     this.navigateToForm = function(item){
+-      SingletonAppViewModel.getInstance().loadViewModule('FinancialForm', item);
++      if (item.Status) {
++        SingletonAppViewModel.getInstance().loadViewModule('FinancialFormEdit', item.Status.Id);
++      }else {
++        SingletonAppViewModel.getInstance().loadViewModule('FinancialForm', item);
++      }
++      
+     };
  
-+    <article data-bind="with: CashIncome" id="stepTwo">
-+        <h5>Section Name</h5>
-+        <div class="columns">
-+            <h6>Cash income</h6>
-+            <label>Monthly Net income
-+                <span>MontlyNetIncome</span>
-+            </label>
-+            
-+            <label>Cash Assistance Received (if any)
-+                <span>CashAssistanceReceived</span>
-+            </label>
-+            
-+        </div>
-+        <div class="columns">
-+            <h6>Expenses</h6>
-+            <label>Monthly Mortgage / Rent
-+                <span>MontlyMortgageRent</span>
-+            </label>
-+            
-+            <label>Car Payment
-+                <span>CarPayment</span>
-+            </label>
-+            
-+            <label>Utilities
-+                <span>Utilities</span>
-+            </label>
-+            
-+            <label>Food / Transportation
-+                <span>FoodTransportation</span>
-+            </label>
-+            
-+            <label>Total estimated expenses</label>
-+            <span >totalEstimatedExpenses</span>
-+        </div>
-+        <div class="actions formSteps">
-+            <a href="#stepOne" class="stepButton">Previous</a>
-+            <a href="#stepThree" class="stepButton">Next</a>
-+        </div>
-+    </article>
+     this.navigateToRequests = function(){
+Index: Scripts/app/ViewModels/FinancialForm/request/financialForm.js
+===================================================================
+--- Scripts/app/ViewModels/FinancialForm/request/financialForm.js	(revision 10643)
++++ Scripts/app/ViewModels/FinancialForm/request/financialForm.js	(working copy)
+@@ -11,6 +11,9 @@
+     var financialCategoryObject = new FinancialCategory();
+     var dependantsCategoryObject = new DependantsCategory();
+     this.disasterItem = !$.isEmptyObject(data.disasterItem)? data.disasterItem : {Name:'', Id:0};
++    if (data.editId) {
++      alert('Editing');
++    }
+     this.financialFormId = ko.observable(0);
+     this.isLoading = ko.observable(false);
+ 
+@@ -138,4 +141,26 @@
+     };
+   };
+   return FinancialForm;
+-});
+\ No newline at end of file
++});
++/*
++var vale = 'no';
++$('input:radio[value="' + vale + '"][name="disabilities"]').iCheck('check');
 +
-+    <article data-bind="with: Dependant" id="stepThree">
-+        <h5>Section Name</h5>
-+        <div class="columns">
-+            <h6>Subsection Title</h6>
-+            <label>Number of Dependants
-+                <span>NumberOfDependants</span>
-+            </label>
-+            
-+        </div>
-+        <div class="columns">
-+            <h6>Subsection Title</h6>
-+            <label class="sSize">Please describe any special circunstances that might affect your application (persons with disabilities, funeral expenses, foster care children, unemployement?)</label>
-+            <textarea data-bind="value: SpecialCircunstances"></textarea>
-+        </div>
-+        <div class="actions formSteps">
-+            <a href="#stepTwo" class="stepButton">Previous</a>
-+        </div>
-+    </article>
-+
-+    <article data-bind="with: Evaluation">
-+        <h5>Section Name</h5>
-+        <div class="columns">
-+            
-+        </div>
-+        <div class="columns">
-+            <h6>Subsection Title</h6>
-+            <label class="iCheckRadio">
-+                @StringResources.lbl_recommended (USD)
-+                <input type="text" name="disabilities" data-bind="value: RecommendedAmount" disabled="disabled"/>
-+            </label>
-+            <label class="iCheckRadio">
-+                @StringResources.lbl_approved (USD)
-+                <input type="text" name="disabilities" placeholder="@StringResources.txt_enter" data-bind="value: ApprovedAmount"/>
-+            </label>
-+            
-+        </div>
-+    </article>
-+
-     <article>
-         <div class="message valid">
-             <label>@StringResources.lbl_status:</label>
++***********
++this.itemCategoryList()
++push Item
++Object {Type: 1, Name: "Cat5", Amount: 500}
++this automatically will update totalEstimatedLoss computed
++************
++name: 'FinancialForm',
++view: 'FinancialForm',
++routeAssociated: '',
++-----
++name: 'FinancialFormEdit',
++view: 'FinancialForm',
++routeAssociated: 'request/:id',
++module: 'ViewModels/financialForm/request/financialForm',
++onModuleLoaded: _.bind(function (resolveData, Module) {
++  resolveData(new Module({editId: this.params}));
++},this)
++*/
+\ No newline at end of file
