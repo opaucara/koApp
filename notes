@@ -33,43 +33,12 @@ BTN_SAVE_AS_DRAFT = 'Save as draft';
 BTN_SUBMIT_REQUEST = 'Submit Request';
 
 *******************************
-BOOKMARKEABILITY
-var optionalParam = /\((.*?)\)/g;
-var namedParam    = /(\(\?)?:\w+/g;
-var splatParam    = /\*\w+/g;
-var escapeRegExp  = /[\-{}\[\]+?.,\\\^$|#\s]/g;
-function _routeToRegExp(route) {
-      route = route.replace(escapeRegExp, '\\$&')
-                   .replace(optionalParam, '(?:$1)?')
-                   .replace(namedParam, function(match, optional){
-                     return optional ? match : '([^\/]+)';
-                   })
-                   .replace(splatParam, '(.*?)');
-      return new RegExp('^' + route + '$');
-    }
-
- // Given a route, and a URL fragment that it matches, return the array of
-    // extracted decoded parameters. Empty or unmatched parameters will be
-    // treated as `null` to normalize cross-browser behavior.
-function _extractParameters(route, fragment) {
-  var params = route.exec(fragment).slice(1);
-  return _.map(params, function(param) {
-    return param ? decodeURIComponent(param) : null;
-  });
-}
-
-_routeToRegExp('movies');
-_extractParameters(_routeToRegExp('movies'), 'movies');
+https://www.youtube.com/watch?v=HwFNV0XNTAM
 
 
-_extractParameters(_routeToRegExp('movies/detail/:id'), 'movies/detail/5');
+My dashboard
+---
+request list...
 
-_extractParameters(_routeToRegExp('movies/new'), 'movies/new/');
-_extractParameters(_routeToRegExp('movies/edit/:id'), 'movies/edit/fg');
--------
-appRoutes: {
-      'movies': 'showCollectionView',
-      'movies/detail/:id': 'showDetailView',
-      'movies/new': 'showFormView',
-      'movies/edit/:id': 'showFormView'
-    }
+HRsmartOnboarding/Evaluation Status 10%
+
