@@ -17,24 +17,14 @@ http://code.dougneiner.com/presentations/machina/connectivity/
 Cool modal efects
 http://tympanus.net/Development/ModalWindowEffects/
 ******************************
-LBL_FINANCIAL_FORM = "Financial Form";
-LBL_STATUS = 'Status';
-LBL_LOSS_TYPE = 'Loss type';
-
-MSG_ERROR_USER_NOT_FOUND = "The user doesn't exist";
-MSG_USER_SUCCESSFULLY_DELETED = "User was successfully deleted";
-MSG_ERROR_CHOOSE_OPTION = 'Choose an option';
-MSG_GENERIC_ERROR = "An error has ocurred";
-MSG_SUCCESS = 'Success';
-MSG_ERROR = 'Error';
-MSG_SUBMIT_HAS_FAILED = 'Submit Request has failed';
-
-BTN_SAVE_AS_DRAFT = 'Save as draft';
-BTN_SUBMIT_REQUEST = 'Submit Request';
-
-*******************************
 "San Paulo, BR" , 'Rawson 300'
 Easy update 'google.maps.Geocoder'
 
 https://developers.google.com/maps/documentation/javascript/examples/geocoding-simple?hl=es
-
+************************************************
+Inheritance
+F(){
+};
+DisasterSelectionListAdminArea.prototype = Object.create(DisasterSelectionListArea.prototype);
+DisasterSelectionListAdminArea.prototype.constructor = DisasterSelectionListAdminArea;
+//Inheritated methods must be in prototype definition if they need to be overriden AND called again from child methods
