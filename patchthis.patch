@@ -1,0 +1,193 @@
+Index: Scripts/app/utils.js
+===================================================================
+--- Scripts/app/utils.js	(revision 11169)
++++ Scripts/app/utils.js	(working copy)
+@@ -130,6 +130,14 @@
+         });
+     };
+ 
++    //Search if object has all nullish properties. ie: empty arrays, null objects, empty strings.
++    that.hasNullProperties = function(obj){
++        if (_.isEmpty(obj)) return false;
++        return _.every(obj, function(property,key){
++          return _.isNumber(property) && !property || (!_.isNumber(property) && _.isEmpty(property));
++        });
++    };
++
+     window.utilsTw = that;
+     return that;
+ });
+\ No newline at end of file
+Index: Scripts/app/ViewModels/eventDashBoard.js
+===================================================================
+--- Scripts/app/ViewModels/eventDashBoard.js	(revision 11169)
++++ Scripts/app/ViewModels/eventDashBoard.js	(working copy)
+@@ -45,6 +45,9 @@
+       ];
+       this.eventList(mockList);
+       this.gmap = GMap.initialize({mapContainer: '#map_canvas'});
++      //Retrieve from X context;
++      filterEventsByRadius(1850000);
++      //this.eventList(eventInRadius)
+       this.gmap.addMarkers(this.eventList());
+       /*dataservice.disaster.GetDisasterCategories().
+         then(_.bind(function success(data) {
+@@ -57,6 +60,21 @@
+         });*/
+     };
+ 
++    var filterEventsByRadius = _.bind(function(radius){
++      var userLocation = 'NY, Usa';
++      // Shouldn't Events to be provided by backend already filtered?
++      var res = this.gmap.filterLocationFromCityRadius(
++                  userLocation, _.pluck(this.eventList(), 'location'), radius
++                );
++      res.then(_.bind(function(data){
++        console.log(data);
++        //debugger;
++
++        /*debugger;
++        _.without(this.eventList(),_.findWhere(locations, {location:data}));*/
++      }, this));
++    }, this);
++
+     this.goToRegionView = _.bind(function(item){
+       this.gmap.panTo(item.gMarker);
+       this.gmap.showCard(item.gInfowindow, item.gMarker);
+Index: Scripts/app/ViewModels/FinancialForm/formSections/lossCategory.js
+===================================================================
+--- Scripts/app/ViewModels/FinancialForm/formSections/lossCategory.js	(revision 11169)
++++ Scripts/app/ViewModels/FinancialForm/formSections/lossCategory.js	(working copy)
+@@ -108,7 +108,8 @@
+     this.getFormResidenceData = function () {
+       return {
+         DescribeLoss: this.describeLossResidence(),
+-        ResidenceTypeId: this.chosenResidenceType(),
++        //ResidenceTypeId is this needed to be send?
++        //ResidenceTypeId: this.chosenResidenceType(),
+         InsuranceId: this.houseInsuranceList(),
+         HousingSituation: this.housingSituation(),
+         LossCategories: this.categoryListForResidence(),
+@@ -119,7 +120,8 @@
+     this.getFormVehicleData = function () {
+       return {
+         DescribeLoss: this.describeLossVehicle(),
+-        ResidenceTypeId: this.chosenResidenceType(),
++        //ResidenceTypeId is this needed to be send?
++        //ResidenceTypeId: this.chosenResidenceType(),
+         InsuranceId: this.houseInsuranceList(),
+         LossCategories: this.categoryListForVehicle(),
+         AmountRequested: this.totalEstimatedCarLoss()
+Index: Scripts/app/ViewModels/FinancialForm/request/financialForm.js
+===================================================================
+--- Scripts/app/ViewModels/FinancialForm/request/financialForm.js	(revision 11169)
++++ Scripts/app/ViewModels/FinancialForm/request/financialForm.js	(working copy)
+@@ -131,8 +131,16 @@
+         return message;
+     };*/
+ 
++    this.isLossFilled = function(){
++      var atLeastOneLossWasFilled = !utils.hasNullProperties(this.getLossCategory().getFormResidenceData()) || !utils.hasNullProperties(this.getLossCategory().getFormVehicleData());
++      return atLeastOneLossWasFilled;
++    };
+     this.submitForm = function(){
+-      if (this.validateFinancialForm()) {
++      if ( !this.isLossFilled()) {
++        toastr.error('At least one loss is required');
++      }else if (this.validateFinancialForm()) {
++        debugger;
++        return;
+         dataservice.financialForm.SubmitFinancialForm({
+           Id: this.financialFormId(),
+           DisasterId: this.disasterItem.Id,
+Index: Scripts/lib/custom/GMap.js
+===================================================================
+--- Scripts/lib/custom/GMap.js	(revision 11169)
++++ Scripts/lib/custom/GMap.js	(working copy)
+@@ -1,7 +1,7 @@
+ /**
+  * Library to interact with Google Maps API
+  */
+- define(['async!http://maps.google.com/maps/api/js?sensor=false'], function () {
++ define(['async!http://maps.google.com/maps/api/js?libraries=geometry&sensor=false'], function () {
+   var GMap = (function(){
+     var centerMap = new google.maps.LatLng(21 , -23);
+     var map = null;
+@@ -22,7 +22,7 @@
+     var initialize = function(ops){
+       if (typeof ops === 'object') {
+         $.extend(options, ops);
+-        map = new google.maps.Map($(options.mapContainer).get(0), options);
++        window.map = map = new google.maps.Map($(options.mapContainer).get(0), options);
+       } else {
+         throw new Error('Provide options using a valid Javascript object.');
+       }
+@@ -64,11 +64,53 @@
+     var showCard = function(infowindow, marker){
+       infowindow.open(map,marker);
+     };
++
++    var filterLocationFromCityRadius = function(userLocation, locations, radius){
++      //Note this /en is been hardcoded... 
++       /*<!-- ko template: {
++        name: '/en/Default/CashIncome',*/
++      var geocoder = new google.maps.Geocoder();
++      var gLocations = Array();
++      var def = $.Deferred();
++      var l = id = null;
++      _.each(locations, function(loc){
++        id = _.uniqueId();
++        l = new google.maps.LatLng(loc.latitude, loc.longitud);
++        l.id = loc.id = id;
++        gLocations.push(l);
++      });
++      geocoder.geocode({ 'address': userLocation }, _.bind(function (results, status) {
++        if (status == google.maps.GeocoderStatus.OK) {
++          var userPosition = results[0].geometry.location;
++          var myCircle = new google.maps.Circle({
++            center: userPosition,
++            map: map,
++            radius: radius,
++            strokeColor: "#FF0000",
++            strokeOpacity: 0.8,
++            strokeWeight: 2,
++            fillColor: "#FF0000",
++            fillOpacity: 0.35
++          });
++          var myBounds = myCircle.getBounds();
++          _.each(gLocations, function(gLoc){
++            if(!myBounds.contains(gLoc)) {
++              //Update to 1.4.4 or latest to use _.findWhere(locations, {id:gLoc})
++              locations = _.without(locations, _.where(locations, {id:gLoc.id})[0]);
++            }
++          });
++          def.resolve(locations);
++        }
++      }, this));
++      return def;
++    };
++
+     return {
+       initialize: initialize,
+       addMarkers: addMarkers,
+       panTo: panTo,
+-      showCard: showCard
++      showCard: showCard,
++      filterLocationFromCityRadius: filterLocationFromCityRadius
+     };
+   })();
+   return GMap;
+Index: Views/Shared/_lossSection.cshtml
+===================================================================
+--- Views/Shared/_lossSection.cshtml	(revision 11169)
++++ Views/Shared/_lossSection.cshtml	(working copy)
+@@ -158,7 +158,8 @@
+                 </td>
+                 <td>
+                   <input disabled="disabled" type="text" name="damageCarItem"
+-                      data-bind="event:{change: $parent.carItemChanged},
++                      data-bind="value: Amount,
++                                 event:{change: $parent.carItemChanged},
+                                  attr: {id: 'carItem' + Id}
+                                 " style="width:56px; text-align:right" />
+                 </td>
