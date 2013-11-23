@@ -1,0 +1,384 @@
+/*globals define,$,console, window*/
+define('dataservice',
+    ['jquery', 'amplify'],
+    function ($, amplify) {
+        var objetizeId = function (data) {
+            if (typeof data === 'number' || typeof data === 'string') {
+                return { id: data };
+            }
+            return data;
+        };
+        function performCall(controller, resourceId, data, backendResponse) {
+            //console.log('dataservice (that): ', that);
+            data = data || {};
+            //data.id = data.id || '';
+            //console.log('dataservice (data): ', data);
+            return $.Deferred(function (def) {
+                //console.log(that);
+                //console.log('dataservice (action): ',action);
+                data.controller = controller;
+                /*amplify.request({
+                    resourceId: resourceId,
+                    data: data,
+                    success: function (data) {
+                        //console.log('success');
+                        def.resolve(data);
+                    },
+                    error: function (err) {
+                        def.reject(err);
+                    }
+                });*/
+                def.resolve(backendResponse);
+            }).promise();
+        }
+        function callAction(controller, action, resourceId, data, backendResponse) {
+            data = data || {};
+            data.action = action;
+            return performCall(controller, resourceId, data, backendResponse);
+        };
+
+        function call(controller, resourceId, data) {
+            data = data || {};
+            data.id = data.id || '';
+            return performCall(controller, resourceId, data);
+        };
+
+        function getRepository(spec, extensions) {
+            spec = spec || {};
+            var privates = {};
+
+            var that = { controller: spec.controller || 'base' };
+
+            if (typeof (spec) === 'string') {
+                that.controller = spec;
+                spec = {};
+            }
+
+            that.Add = function (data) {
+                return call(that.controller, 'post', data);
+            };
+
+            that.Update = function (data) {
+                return call(that.controller, 'put', data);
+            };
+
+            that.Get = function (data) {
+                //console.log('dataservice (get) ',that.controller, that.resourceId,data,that.data);
+                return call(that.controller, 'get', objetizeId(data));
+            };
+
+            that.Delete = function (data) {
+                return call(that.controller, 'del', objetizeId(data));
+            };
+
+            that.CallAction = function (action, resourceId, data) {
+                return callAction(that.controller, action, resourceId, data);
+            };
+
+            extensions = extensions || {};
+            privates.extend = function (prop, action, resource, backendResponse) {
+                //console.log(prop);
+                that[prop] = function (data) {
+                    //console.log(action, resource);
+                    return callAction(that.controller, action, resource, objetizeId(data), backendResponse);
+                };
+            };
+            var wasGetAction = false;
+            var wasPutAction = false;
+            var wasPostAction = false;
+            var wasDelAction = false;
+
+            for (ext in extensions) {
+                privates.extend(ext, extensions[ext].action, extensions[ext].resource, extensions[ext].backendResponse);
+
+                wasGetAction = !wasGetAction ? extensions[ext].resource == 'getaction' : true;
+                wasPutAction = !wasPutAction ? extensions[ext].resource == 'putaction' : true;
+                wasPostAction = !wasPostAction ? extensions[ext].resource == 'postaction' : true;
+                wasDelAction = !wasDelAction ? extensions[ext].resource == 'delaction' : true;
+            }
+
+            if (wasGetAction)
+                privates.extend('Get', 'Get', 'getaction');
+            if (wasPutAction)
+                privates.extend('Put', 'Put', 'putaction');
+            if (wasPostAction)
+                privates.extend('Post', 'Post', 'postaction');
+            if (wasDelAction)
+                privates.extend('Delete', 'Delete', 'delaction');
+
+            return that;
+        }
+
+        var employeeDS = getRepository('Employee', {
+            GetEmployeeDetailBySid: { action: 'GetEmployeeDetailBySid', resource: 'getaction' }
+        });
+
+        var searchDS = getRepository('Search', {
+            SearchEmployees: { action: 'SearchEmployees', resource: 'getaction' },
+            SearchUsers: { action: 'SearchUsers', resource: 'getaction' },
+            SearchEmployeesForUserLog: { action: 'SearchEmployeesForUserLog', resource: 'getaction' },
+            SearchEmployeeBySid: { action: 'SearchEmployee', resource: 'getaction' }
+        });
+
+        var expectationDS = getRepository('Expectation', {
+            CanModifyExpectation: { action: 'GetCanModifyExpectation', resource: 'getaction' },
+            Copy: { action: 'PostCopyItem', resource: 'postaction' },
+            Add: { action: 'Post', resource: 'postaction' },
+            Get: { action: 'Get', resource: 'getaction' },
+            GetEnabledByProcessId: { action: 'GetEnabledByProcessId', resource: 'getaction' },
+            GetByProcessId: { action: 'GetByProcessId', resource: 'getaction' },
+            GetBySid: { action: 'GetByEmployeeSid', resource: 'getaction' },
+            GetIdsBySid: { action: 'GetIdsByEmployeeSid', resource: 'getaction' },
+            GetIdsBySids: { action: 'GetIdsByEmployeeSids', resource: 'getaction' },
+            GetIdsByRuleId: { action: 'GetIdsByRuleId', resource: 'getaction' },
+            GetWithoutRuleId: { action: 'GetWithoutRuleId', resource: 'getaction' },
+            Update: { action: 'Put', resource: 'putaction' },
+            Disable: { action: 'PutDisableItem', resource: 'putaction' },
+            AssignEmployees: { action: 'PutAssignEmployees', resource: 'putaction' },
+            AssignHierarchies: { action: 'PutAssignHierarchies', resource: 'putaction' },
+            DeleteAssignEmployees: { action: 'DeleteAssignEmployees', resource: 'delaction' },
+            DeleteRuleExpectation: { action: 'DeleteRuleExpectation', resource: 'delaction' },
+            Delete: { action: 'Delete', resource: 'delaction' },
+            UpdateExpectation: { action: 'PutUpdateExpectation', resource: 'putaction' }
+        });
+
+        var processDS = getRepository('Process', {
+            GetAllWithEnabledExpectations: { action: 'GetAllWithEnabledExpectations', resource: 'getaction' },
+            GetAllProcesses: { action: 'GetAllProcesses', resource: 'getaction' },
+            GetWithCurrent: { action: 'GetWithCurrent', resource: 'getaction' },
+            GetWithEnabledExpectations: { action: 'GetWithEnabledExpectations', resource: 'getaction' },
+            GetByProcessId: { action: 'GetByProcessId', resource: 'getaction' },
+            AddNewProcess: { action: 'PostAddNewProcess', resource: 'postaction' },
+            Add: { action: 'Post', resource: 'postaction' },
+            Get: { action: 'Get', resource: 'getaction' }
+        });
+
+        var performanceHistory = getRepository('PerformanceStatusHistory', {
+            GetByPerformanceId: { action: 'GetByPerformanceId', resource: 'getaction' }
+        });
+
+        var performanceAssessmentDS = getRepository('PerformanceAssessment', {
+            UpdateItem: { action: 'PutUpdateItem', resource: 'putaction' },
+            CompleteReview: { action: 'PutComplete', resource: 'putaction' },
+            HrCompleteReview: { action: 'PutHRComplete', resource: 'putaction' },
+            SaveReview: { action: 'PutSaveReview', resource: 'putaction' },
+            FinalizeAll: { action: 'PutFinalizeAll', resource: 'putaction' },
+            Finalize: { action: 'PutFinalize', resource: 'putaction' },
+            ChangeHRStatus: { action: 'PutChangeHRStatus', resource: 'putaction' },
+            PublishAll: { action: 'PutPublishAll', resource: 'putaction' },
+            PublishReview: { action: 'PutPublishReview', resource: 'putaction' },
+            ReadyToPublishAll: { action: 'PutReadyToPublishAll', resource: 'putaction' },
+            HrHoldAll: { action: 'PutHrHoldAll', resource: 'putaction' },
+            RevertToInProgressManagerDraft: { action: 'PutRevertToInProgressManagerDraft', resource: 'putaction' },
+            RevertToManagerCompleted: { action: 'PutRevertToManagerCompleted', resource: 'putaction' },
+            RevertToReadyToPublish: { action: 'PutRevertToReadyToPublish', resource: 'putaction' },
+            GetStatusManagementPerformance: { action: 'GetStatusManagementPerformance', resource: 'getaction' },
+            GetBySid: { action: 'GetByEmployeeSid', resource: 'getaction' },
+            GetCountReviewsToPublish: { action: 'GetCountReviewsToPublish', resource: 'getaction' },
+            GetCountReviewsToSetReadyToPublish: { action: 'GetCountReviewsToSetReadyToPublish', resource: 'getaction' },
+            GetCountReviewsToFinalize: { action: 'GetCountReviewsToFinalize', resource: 'getaction' },
+            GetCountReviewsToHrHold: { action: 'GetCountReviewsToHrHold', resource: 'getaction' },
+            GetDirectsOnly: { action: 'GetDirectsOnly', resource: 'getaction' },
+            GetWholeHierarchy: { action: 'GetWholeHierarchy', resource: 'getaction' },
+            CanAccess: { action: 'GetCanAccess', resource: 'getaction' }
+        });
+
+        var userDS = getRepository('User', {
+            GetLoggedEmployee: { action: 'GetLoggedEmployee', resource: 'getaction',
+                backendResponse:{
+                    Sid: 'E1717',
+                    Lob: 'Lob data',
+                    Country: 'USA',
+                    State: 'FLorida',
+                    City: 'Los valles',
+                    FirstName: 'Erik',
+                    LastName: 'Larson',
+                    FullName: 'Erik Larson',
+                    Position: 'Data entry'
+                }
+            },
+            Get: { action: 'Get', resource: 'getaction' },
+            ChangeUser: { action: 'PutChangeUser', resource: 'getaction' },
+            ActivateUser: { action: 'PutActivateUser', resource: 'putaction' },
+            DeActivateUser: { action: 'PutDeActivateUser', resource: 'putaction' },
+            Update: { action: 'PutUser', resource: 'putaction' },
+            Add: { action: 'PostUser', resource: 'postaction' },
+            AddHierarchy: { action: 'PutAddHierarchy', resource: 'putaction' },
+            ExcludeHierarchy: { action: 'PutExcludeHierarchy', resource: 'putaction' },
+            DeleteUserHierarchy: { action: 'DeleteUserHierarchy', resource: 'delaction' },
+            LoginAsRole: { action: 'PostLoginAsRole', resource: 'postaction' }
+        });
+
+        var answerDS = getRepository('Answer', {
+            Update: { action: 'PutAnswer', resource: 'putaction' },
+            Add: { action: 'PostAnswer', resource: 'postaction' }
+        });
+
+        var assignmentRuleDS = getRepository('AssignmentRule', {
+            Add: { action: 'Post', resource: 'postaction' },
+            AddItem: { action: 'PostAddItem', resource: 'postaction' },
+            AddExpectations: { action: 'PostExpectations', resource: 'postaction' }
+        });
+
+        var ratingOptionDS = getRepository('RatingOption', {
+            GetRiskAndControlOptionsByProcess: { action: 'GetRiskAndControlOptionsByProcess', resource: 'getaction' },
+            GetOverallPerformanceOptionsByProcess: { action: 'GetOverallPerformanceOptionsByProcess', resource: 'getaction' }
+        });
+
+        var uploadedFileDS = getRepository('ExpectationAttachedFile', {
+            GetByFileId: { action: 'GetByFileId', resource: 'getaction' },
+            DeleteItem: { action: 'PostDeleteItem', resource: 'postaction' },
+            GetByPerformanceAssessmentId: { action: 'GetByPerformanceAssessmentId', resource: 'getaction' },
+            Add: { action: 'Post', resource: 'postaction' },
+            Get: { action: 'Get', resource: 'getaction' },
+            Delete: { action: 'Delete', resource: 'delaction' }
+        });
+
+        var ratingDS = getRepository('Rating', {
+            CanModify: { action: 'GetCanModify', resource: 'getaction' },
+            Disable: { action: 'PutDisable', resource: 'putaction' },
+            Update: { action: 'Put', resource: 'putaction' },
+            Add: { action: 'Post', resource: 'postaction' },
+            Get: { action: 'Get', resource: 'getaction' },
+            Delete: { action: 'Delete', resource: 'delaction' }
+        });
+
+        var userLogDS = getRepository('UserLog', {
+            SearchLogs: { action: 'PostSearchLogs', resource: 'postaction' },
+            GetActivities: { action: 'GetActivities', resource: 'getaction' }
+        });
+
+        var reminder = getRepository('Reminder', {
+            SendEmail: { action: 'PostSendEmail', resource: 'postaction' }
+        });
+
+        var faqManagerDS = getRepository('FaqManager', {
+            MoveFaq: { action: 'PutMoveFaq', resource: 'putaction' },
+            Update: { action: 'Put', resource: 'putaction' },
+            SaveFaq: { action: 'PostSaveFaq', resource: 'postaction' }
+        });
+
+        var faqEmployeeDS = getRepository('FaqEmployee', {
+            MoveFaq: { action: 'PutMoveFaq', resource: 'putaction' },
+            Update: { action: 'Put', resource: 'putaction' },
+            SaveFaq: { action: 'PostSaveFaq', resource: 'postaction' }
+        });
+
+        var statusDS = getRepository('Status', {
+            GetStatusHRList: { action: 'GetStatusHRList', resource: 'getaction' },
+            GetStatusList: { action: 'GetStatusList', resource: 'getaction' },
+            GetStatusTree: { action: 'GetStatusTree', resource: 'getaction' }
+        });
+
+        var configToolsFileDS = getRepository('ConfigToolsFile', {
+            DeleteItem: { action: 'PostDeleteItem', resource: 'postaction' },
+            GetLOBExpectationFiles: { action: 'GetLOBExpectationFiles', resource: 'getaction' },
+            GetLOBExpectationFilesBySid: { action: 'GetLOBExpectationFilesBySid', resource: 'getaction' },
+            GetRiskControlFeedbackFileBySid: { action: 'GetRiskControlFeedbackFileBySid', resource: 'getaction' },
+            GetUserGuideFile: { action: 'GetUserGuideFile', resource: 'getaction' },
+            GetTierOneChecklistFile: { action: 'GetTierOneChecklistFile', resource: 'getaction' }
+        });
+
+        var feedbackDS = getRepository('AdditionalFeedback', {
+            GetById: { action: 'GetById', resource: 'getaction' },
+            SaveFeedback: { action:'PutSaveAdditionalFeedback', resource:'putaction'},
+            Complete: { action: 'PutComplete', resource: 'putaction' },
+            Decline: { action: 'PutDecline', resource: 'putaction' }
+        });
+
+        var feedbackRequestDS = getRepository('AdditionalFeedbackRequest', {
+            GetBySid: { action:'GetBySid', resource:'getaction'},
+            GetByRequestedToSid: { action:'GetByRequestedToSid', resource:'getaction'},
+            GetById: { action:'GetById', resource:'getaction'},
+            //UpdateFeedbackRequest: { action:'PutAdditionalFeedbackRequest', resource:'putaction'},
+            AddFeedbackRequest: { action:'PostAdditionalFeedbackRequest', resource:'postaction'}
+        });
+
+        var bulkUploadHrOnHoldDS = getRepository('BulkFileHrOnHold');
+
+        bulkUploadHrOnHoldDS.PostBulkFileItems = function bulkUploadHrOnHoldPost(data) {
+            return bulkUploadHrOnHoldDS.CallAction('PostBulkFileItems', 'postaction', data);
+        };
+
+        var bulkUploadIndicatorDS = getRepository('BulkFileIndicator');
+
+        bulkUploadIndicatorDS.PostBulkFileItems = function bulkUploadIndicatorPost(data) {
+            return bulkUploadIndicatorDS.CallAction('PostBulkFileItems', 'postaction', data);
+        };
+
+        var bulkUploadEmployeeDS = getRepository('BulkFileEmployee');
+
+        bulkUploadEmployeeDS.PostBulkFileItems = function bulkUploadEmployeePost(data) {
+            return bulkUploadEmployeeDS.CallAction('PostBulkFileItems', 'postaction', data);
+        };
+        /**/
+        var disasterDS = getRepository('Disaster', {
+            GetDisasterCategories: { action: 'GetDisasterCategories', resource: 'getaction' },
+            GetDisastersForAdmin:  { action: 'GetDisastersForAdmin', resource: 'getaction' },
+            CreateEvent: { action: 'PostDisaster', resource: 'postaction' },
+            PostDisableById: { action: 'PostDisableById', resource: 'postaction' }
+        });
+        var financialFormDS = getRepository('FinancialForm', {
+            GetLastestFinancialForms: { action: 'PostGetFinancialForms', resource: 'postaction' },
+            GetMasterData: { action: 'GetMasterData', resource: 'getaction' },
+            SaveFinancialForm: { action:'PostFinancialForm', resource:'postaction'},
+            SubmitFinancialForm: { action:'PostSubmit', resource:'postaction'},
+            GetFormById: { action:'GetById', resource: 'getaction'},
+            ApproveForm: { action:'PostApprove', resource: 'postaction'}
+        });
+
+        var residenceTypeDS = getRepository('ResidenceType', {
+            getResidenceTypes: {action: 'Get', resource: 'getaction'}
+        });
+        var insuranceDS = getRepository('Insurance', {
+            getInsurance: {action: 'Get', resource: 'getaction'}
+        });
+        
+        var lossTypeResidenceDS = getRepository('LossTypeResidence', {
+            SaveLossTypeResidence: { action: 'PostLossTypeResidence', resource: 'postaction' }
+        });
+
+        var lossTypeVehicleDS = getRepository('LossTypeVehicle', {
+            SaveLossTypeVehicle: { action: 'PostLossTypeVehicle', resource: 'postaction' }
+        });
+        /**/
+
+        var module = {
+            process: processDS,
+            expectation: expectationDS,
+            appSettings: getRepository('AppSetting'),
+            performanceAssessment: performanceAssessmentDS,
+            rating: ratingDS,
+            assignmentRule: assignmentRuleDS,
+            ratingOption: ratingOptionDS,
+            role: getRepository('Role'),
+            businessProperties: getRepository('BusinessProperty'),
+            uploadedFile: uploadedFileDS,
+            search: searchDS,
+            user: userDS,
+            employee: employeeDS,
+            answer: answerDS,
+            status: statusDS,
+            userLog: userLogDS,
+            faqManager: faqManagerDS,
+            faqEmployee: faqEmployeeDS,
+            configToolsFile: configToolsFileDS,
+            additionalFeedback: feedbackDS,
+            additionalFeedbackRequest: feedbackRequestDS,
+            performanceHistory: performanceHistory,
+            reminder: reminder,
+            bulkUploadHrOnHold: bulkUploadHrOnHoldDS,
+            bulkUploadIndicator: bulkUploadIndicatorDS,
+            bulkUploadEmployee: bulkUploadEmployeeDS,
+            disaster: disasterDS,
+            financialForm: financialFormDS,
+            residenceType: residenceTypeDS,
+            insurance: insuranceDS,
+            lossTypeResidence: lossTypeResidenceDS,
+            lossTypeVehicle: lossTypeVehicleDS
+        };
+
+        return module;
+
+    });
+
