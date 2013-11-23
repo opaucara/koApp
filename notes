@@ -28,3 +28,16 @@ F(){
 DisasterSelectionListAdminArea.prototype = Object.create(DisasterSelectionListArea.prototype);
 DisasterSelectionListAdminArea.prototype.constructor = DisasterSelectionListAdminArea;
 //Inheritated methods must be in prototype definition if they need to be overriden AND called again from child methods
+***********
+.content{margin:40px; width:260px; height:500px;
++ .css
+    'mCustomScrollbar': '../lib/jquery.mCustomScrollbar'/*,
+      'mCustomScrollbarConcat': '../lib/jquery.mCustomScrollbar.concat.min'*/
+'utils', 'mCustomScrollbarConcat'], function (ko, SingletonAppViewModel, dataservice, utils, mCustomScrollbar) {
+    ***
+     $("#content_1").mCustomScrollbar({
+                scrollButtons:{
+                        enable:true
+                    }
+            });
+
