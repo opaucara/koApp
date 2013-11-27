@@ -190,7 +190,7 @@ define('dataservice',
                     Lob: 'Lob data',
                     Country: 'USA',
                     State: 'FLorida',
-                    City: 'Los valles',
+                    City: 'Florida',
                     FirstName: 'Erik',
                     LastName: 'Larson',
                     FullName: 'Erik Larson',
@@ -313,13 +313,98 @@ define('dataservice',
         };
         /**/
         var disasterDS = getRepository('Disaster', {
-            GetDisasterCategories: { action: 'GetDisasterCategories', resource: 'getaction' },
-            GetDisastersForAdmin:  { action: 'GetDisastersForAdmin', resource: 'getaction' },
+            GetDisasterCategories: { action: 'GetDisasterCategories', resource: 'getaction' ,
+                backendResponse: {
+                    Disasters: [
+                        {Id:1, FinancialFormId: 3,Name: 'Flood 1', Description: 'Flood1desc', Type: 1,Status:{
+                            Id: 100,
+                            Description: "Draft"
+                        },
+                        Location: {
+                            Latitude:27.83, 
+                            Longitude:-81.3,
+                            Country:'EEUU',
+                            State: 'Florida',
+                            City:'Miami'
+                        }},
+                        {Id:2, FinancialFormId: 4,Name: 'Fire 1', Description: 'Fire1desc', Type: 2,Status:{
+                            Id: 100,
+                            Description: "Draft"
+                        },
+                        Location: {
+                            Latitude:35.80,  
+                            Longitude:-79,
+                            Country:'EEUU',
+                            State: 'North Carolina',
+                            City:'North Carolina'
+                        }},
+                        {Id:3, FinancialFormId: 5,Name: 'Flood 2', Description: 'Flood 2 desc', Type: 1,Status:{
+                            Id: 100,
+                            Description: "Draft"
+                        },
+                        Location: {
+                            Latitude:40.59,
+                            Longitude:-74.16,
+                            Country:'EEUU',
+                            State: 'New York',
+                            City:'Staten Island'
+                        }}
+                    ]
+                }
+            },
+            GetDisastersForAdmin:  { action: 'GetDisastersForAdmin', resource: 'getaction' ,
+                backendResponse: {
+                    Disasters: [
+                        {Id:1, FinancialFormId: 3,Name: 'Flood 1', Description: 'Flood1desc', Type: 1,Status:{
+                            Id: 100,
+                            Description: "Draft"
+                        },
+                        Location: {
+                            Latitude:27.83, 
+                            Longitude:-81.3,
+                            Country:'EEUU',
+                            State: 'Florida',
+                            City:'Miami'
+                        }},
+                        {Id:2, FinancialFormId: 4,Name: 'Fire 1', Description: 'Fire1desc', Type: 2,Status:{
+                            Id: 100,
+                            Description: "Draft"
+                        },
+                        Location: {
+                            Latitude:35.80,  
+                            Longitude:-79,
+                            Country:'EEUU',
+                            State: 'North Carolina',
+                            City:'North Carolina'
+                        }},
+                        {Id:3, FinancialFormId: 5,Name: 'Flood 2', Description: 'Flood 2 desc', Type: 1,Status:{
+                            Id: 100,
+                            Description: "Draft"
+                        },
+                        Location: {
+                            Latitude:40.59,
+                            Longitude:-74.16,
+                            Country:'EEUU',
+                            State: 'New York',
+                            City:'Staten Island'
+                        }}
+                    ]
+                }
+            },
             CreateEvent: { action: 'PostDisaster', resource: 'postaction' },
             PostDisableById: { action: 'PostDisableById', resource: 'postaction' }
         });
         var financialFormDS = getRepository('FinancialForm', {
-            GetLastestFinancialForms: { action: 'PostGetFinancialForms', resource: 'postaction' },
+            GetLastestFinancialForms: { action: 'PostGetFinancialForms', resource: 'postaction' ,
+                backendResponse: [
+                    {Id:1, EmployeeSid: '43254', EmployeeName:'lol', DisasterName: 'Flood in FLorida', DisasterType: '1',
+                    SubmitionDate: '12/12/2013',
+                    Status: {
+                        Id: 100,
+                        Description: "Draft"
+                    }, SuggestedAmount: 10000}
+                ]
+            },
             GetMasterData: { action: 'GetMasterData', resource: 'getaction' },
             SaveFinancialForm: { action:'PostFinancialForm', resource:'postaction'},
             SubmitFinancialForm: { action:'PostSubmit', resource:'postaction'},
@@ -381,4 +466,3 @@ define('dataservice',
         return module;
 
     });
-
