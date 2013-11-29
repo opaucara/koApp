@@ -1,11 +1,103 @@
-   this.myPostProcessingLogic = function(elements, data){
-        if(this.foreach()[[this.foreach().length-1]] === data){
-          $(".scrollBar").mCustomScrollbar('destroy');
-          $(".scrollBar").mCustomScrollbar();
-        }
-      };
-
- <ul data-bind="foreach: viewAllEvents() ? eventList : filteredEventList" class="eventList" id="eventsSidebar">
-+        <ul data-bind="foreach: {data:(viewAllEvents() ? eventList : filteredEventList),afterRender: myPostProcessingLogic}" class="eventList" id="eventsSidebar">
-          
-
+Index: Scripts/app/ViewModels/eventDashBoard.js
+===================================================================
+--- Scripts/app/ViewModels/eventDashBoard.js	(revision 11466)
++++ Scripts/app/ViewModels/eventDashBoard.js	(working copy)
+@@ -68,8 +68,10 @@
+           }, this);
+ 
+           this.goToRegionView = _.bind(function (item) {
+-              this.gmap.panTo(item.gMarker);
+-              this.gmap.showCard(item.gInfowindow, item.gMarker);
++              /*this.gmap.panTo(item.gMarker);
++              this.gmap.showCard(item.gInfowindow, item.gMarker);*/
++              this.gmap.panTo(item);
++              this.gmap.showCard(item);
+           }, this);
+ 
+           this.navigateToForm = function (item) {
+Index: Scripts/lib/custom/GMap.js
+===================================================================
+--- Scripts/lib/custom/GMap.js	(revision 11466)
++++ Scripts/lib/custom/GMap.js	(working copy)
+@@ -7,7 +7,7 @@
+     var centerMap = new google.maps.LatLng(21 , -23);
+     var map = null;
+     var infoWindow;
+-    var markers = [];
++    var gLocationMapper = {};
+     var markerForAutocomplete = null;
+     var placeOptions = {
+       types: ['geocode']
+@@ -48,10 +48,12 @@
+                        map: map,
+                        icon: item.iconUrl
+                      });
+-        markers.push(marker);
++        gLocationMapper[item.Id] = {};
++        gLocationMapper[item.Id]['marker'] = marker;
+         //These two assigments is not decoupled, meaning it's bad practice, improve need later
+-        item.gMarker = marker;
+-        item.gInfowindow =  new google.maps.InfoWindow({
++        //item.gMarker = marker;
++        //item.gInfowindow =  new google.maps.InfoWindow({
++        gLocationMapper[item.Id]['infoWindow'] =  new google.maps.InfoWindow({
+             content: item.Description
+         });
+         google.maps.event.addListener(marker, 'click', (function(marker1) {
+@@ -66,15 +68,19 @@
+ 
+     // Sets the map on all markers in the array.
+     var setAllMap = function (map) {
+-      for (var i = 0; i < markers.length; i++) {
+-        markers[i].setMap(map);
+-      }
++      //for (var i = 0; i < markers.length; i++) {
++      _.map(gLocationMapper, function(item, id){
++        gLocationMapper[id]['marker'].setMap(map);
++      });
++        //markers[i].setMap(map);
++      //}
+     };
+ 
+     // Removes the markers from the map, but keeps them in the array.
+     var clearMarkers = function () {
+       setAllMap(null);
+-      markers = [];
++      gLocationMapper = {};
++      //markers = [];
+     };
+ 
+     // Shows any markers currently in the array.
+@@ -82,18 +88,27 @@
+       setAllMap(map);
+     }
+ 
+-    var panTo = function(marker){
+-      map.panTo(marker.getPosition());
++    var panTo = function(location){
++      /*map.panTo(marker.getPosition());
+       marker.setAnimation(google.maps.Animation.BOUNCE);
+       setTimeout(function() {
+         marker.setAnimation(null);
++      }, options.bounceTime);*/
++      map.panTo(gLocationMapper[location.Id].marker.getPosition());
++      gLocationMapper[location.Id].marker.setAnimation(google.maps.Animation.BOUNCE);
++      setTimeout(function() {
++        gLocationMapper[location.Id].marker.setAnimation(null);
+       }, options.bounceTime);
+     };
+     
+-    var showCard = function(infowindow, marker){
++    var showCard = function(location){
++      /*if (infoWindow) infoWindow.close();
++      infoWindow = infowindow;
++      infoWindow.open(map,marker);*/
++      //gLocationMapper[location.Id].marker
+       if (infoWindow) infoWindow.close();
+-      infoWindow = infowindow;
+-      infoWindow.open(map,marker);
++      infoWindow = gLocationMapper[location.Id].infoWindow;
++      infoWindow.open(map, gLocationMapper[location.Id].marker);
+     };
+ 
+     var centerOnUserLocation = function (userLocation) {
