@@ -1,0 +1,8 @@
+Communication between modules
+A - pub/sub pattern
+B - Using require.js ~config User Logged info may be exposed (Sid, Name, City) , Razor involved here...
+C - Declare a MYNAMESPACE = {};
+     each file extends your namespace through modules, then Namepsace.B will have access to Namspace.A
+D - mediator-pattern
+    http://www.dofactory.com/javascript-mediator-pattern.aspx
+    http://addyosmani.com/resources/essentialjsdesignpatterns/book/#mediatorpatternjavascript
