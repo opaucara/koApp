@@ -327,10 +327,7 @@ define('dataservice',
                             State: 'Florida',
                             City:'Miami'
                         }},
-                        {Id:2, FinancialFormId: 4,Name: 'Fire 1', Description: 'Fire1desc', Type: 2,Status:{
-                            Id: 100,
-                            Description: "Draft"
-                        },
+                        {Id:2, FinancialFormId: 4,Name: 'Fire 1', Description: 'Fire1desc', Type: 2,Status:null,
                         Location: {
                             Latitude:35.80,  
                             Longitude:-79,
@@ -348,6 +345,36 @@ define('dataservice',
                             Country:'EEUU',
                             State: 'New York',
                             City:'Staten Island'
+                        }},
+                        {Id:4, FinancialFormId: 6,Name: 'Earthquake 1', Description: 'EarthquakeDesc1', Type: 1,Status:null,
+                        Location: {
+                            Latitude:28.83, 
+                            Longitude:-82.3,
+                            Country:'EEUU',
+                            State: 'FloridaMM',
+                            City:'MiamiMM'
+                        }},
+                        {Id:5, FinancialFormId: 7,Name: 'Earthquake 2', Description: 'Earthquakedesc2', Type: 1,Status:{
+                            Id: 100,
+                            Description: "Draft"
+                        },
+                        Location: {
+                            Latitude:29.83, 
+                            Longitude:-83.3,
+                            Country:'EEUU',
+                            State: 'Florida',
+                            City:'Miami'
+                        }},
+                        {Id:6, FinancialFormId: 8,Name: 'Earthquake 3', Description: 'Earthquakedesc3', Type: 1,Status:{
+                            Id: 100,
+                            Description: "Draft"
+                        },
+                        Location: {
+                            Latitude:26.83, 
+                            Longitude:-80.3,
+                            Country:'EEUU',
+                            State: 'Florida',
+                            City:'Miami'
                         }}
                     ]
                 }
@@ -355,7 +382,7 @@ define('dataservice',
             GetDisastersForAdmin:  { action: 'GetDisastersForAdmin', resource: 'getaction' ,
                 backendResponse: {
                     Disasters: [
-                        {Id:1, FinancialFormId: 3,Name: 'Flood 1', Description: 'Flood1desc', Type: 1,Status:{
+                        {Id:1, FinancialFormId: 3,Name: 'Florida Flood 1', Description: 'Florida Flood1desc', Type: 1,Status:{
                             Id: 100,
                             Description: "Draft"
                         },
@@ -365,8 +392,8 @@ define('dataservice',
                             Country:'EEUU',
                             State: 'Florida',
                             City:'Miami'
-                        }},
-                        {Id:2, FinancialFormId: 4,Name: 'Fire 1', Description: 'Fire1desc', Type: 2,Status:{
+                        }, Enabled: true},
+                        {Id:2, FinancialFormId: 4,Name: 'NCarolina Fire 1', Description: 'NCarolina Fire1desc', Type: 2,Status:{
                             Id: 100,
                             Description: "Draft"
                         },
@@ -376,8 +403,8 @@ define('dataservice',
                             Country:'EEUU',
                             State: 'North Carolina',
                             City:'North Carolina'
-                        }},
-                        {Id:3, FinancialFormId: 5,Name: 'Flood 2', Description: 'Flood 2 desc', Type: 1,Status:{
+                        }, Enabled: true},
+                        {Id:3, FinancialFormId: 5,Name: 'NY Flood 2', Description: 'NY Flood 2 desc', Type: 1,Status:{
                             Id: 100,
                             Description: "Draft"
                         },
@@ -387,12 +414,30 @@ define('dataservice',
                             Country:'EEUU',
                             State: 'New York',
                             City:'Staten Island'
-                        }}
+                        }, Enabled: true}
                     ]
                 }
             },
             CreateEvent: { action: 'PostDisaster', resource: 'postaction' },
-            PostDisableById: { action: 'PostDisableById', resource: 'postaction' }
+            PutDisaster: { action: 'PutDisaster', resource: 'putaction' },
+            PostChangeEnabledById: { action: 'PostChangeEnabledById', resource: 'postaction' },
+            GetDisasterById: { action: 'PostChangeEnabledById', resource: 'postaction',
+                backendResponse: {
+                    Id:1, FinancialFormId: 3,
+                    Name: 'Florida Flood 1 GetById', Description: 'Florida Flood1desc GetById', Type: 1,
+                    Status:{
+                            Id: 100,
+                            Description: "Draft"
+                        },
+                    Location: {
+                        Latitude:27.83, 
+                        Longitude:-81.3,
+                        Country:'EEUU',
+                        State: 'Florida',
+                        City:'Miami'
+                    }, Enabled: true
+                }
+            }
         });
         var financialFormDS = getRepository('FinancialForm', {
             GetLastestFinancialForms: { action: 'PostGetFinancialForms', resource: 'postaction' ,
@@ -405,10 +450,58 @@ define('dataservice',
                     }, SuggestedAmount: 10000}
                 ]
             },
-            GetMasterData: { action: 'GetMasterData', resource: 'getaction' },
+            GetMasterData: { action: 'GetMasterData', resource: 'getaction' ,
+                backendResponse: {
+                  "ResidentTypes":[
+                    {"Id":1,"Name":"Personally Owned"},
+                    {"Id":2,"Name":"Family Owned"},
+                    {"Id":3,"Name":"Renter"}
+                  ],
+                  "Insurances":[
+                    {"Id":1,"Name":"Fire"},
+                    {"Id":2,"Name":"Flood"},
+                    {"Id":3,"Name":"Earthquake"}
+                  ],
+                  "LossCategoriesResidence":[
+                    {"Id":1,"Name":"Full House","Description":"Uninhabitable Significant Structural","Amount":10.0000,"Type":"ResidenceOwned"},
+                    {"Id":2,"Name":"Exterior Damage","Description":"(Wall/ Windows/ Roof) Home Damage/ but Livable Interior Structure ","Amount":20.0000,"Type":"ResidenceOwned"},
+                    {"Id":3,"Name":"Furniture","Description":"Couch, Bed, Dresser","Amount":30.0000,"Type":"ResidenceOwned"},
+                    {"Id":4,"Name":"Exterior Items","Description":"Fence, Driveway, Trees","Amount":40.0000,"Type":"ResidenceOwned"},
+                    {"Id":5,"Name":"Sundry Items","Description":"Generator Reimbursement, Clothing","Amount":50.0000,"Type":"ResidenceOwned"},
+                    {"Id":6,"Name":"Not Livable","Description":">3 months < 1 month","Amount":60.0000,"Type":"ResidenceRented"},
+                    {"Id":7,"Name":"Furniture","Description":"Couch, Bed, Dresser","Amount":70.0000,"Type":"ResidenceRented"}
+                  ],
+                  "LossCategoriesVehicle":[
+                    {"Id":9,"Name":"Totaled Significant","Description":"Tranny, Engine, Electrical","Amount":90.0000,"Type":"Vehicle"},
+                    {"Id":10,"Name":"Body Exterior","Description":"Collision but drivable/Interior damage","Amount":100.0000,"Type":"Vehicle"},
+                    {"Id":11,"Name":"Minor Exterior","Description":"Scratches, Dents","Amount":110.0000,"Type":"Vehicle"},
+                    {"Id":12,"Name":"Full Coverage Vs Liability ","Description":"Yes / No","Amount":120.0000,"Type":"Vehicle"}
+                  ],
+                  "LossCategoriesGeneric":[
+                    {"Id":8,"Name":"Big Ticket Item","Description":"Appliances or Boiler Electrical, Carpets","Amount":80.0000,"Type":"Generic"}
+                  ]
+                }
+            },
             SaveFinancialForm: { action:'PostFinancialForm', resource:'postaction'},
             SubmitFinancialForm: { action:'PostSubmit', resource:'postaction'},
-            GetFormById: { action:'GetById', resource: 'getaction'},
+            GetFormById: { action:'GetById', resource: 'getaction',
+                backendResponse: {
+                    Id:1, EmployeeSid: '43254', EmployeeName:'lol', DisasterName: 'Flood in FLorida', 
+                    DisasterType: '1',
+                    SubmitionDate: '12/12/2013',
+                    Status: {
+                        Id: 100,
+                        Description: "Draft"
+                    }, SuggestedAmount: 10000,
+                    CashIncome: {
+                        MontlyNetIncome: 1,
+                        CashAssistanceReceived: 3
+                    },
+                    Dependant: {
+                        
+                    }
+                }
+            },
             ApproveForm: { action:'PostApprove', resource: 'postaction'}
         });
 
