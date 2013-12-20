@@ -1,0 +1,155 @@
+<html>
+<head>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script type="text/javascript">
+  
+ google.load('visualization', '1', {'packages': ['geomap']});
+   google.setOnLoadCallback(drawMap);
+
+    function drawMap() {
+      var data = google.visualization.arrayToDataTable([
+        ['Country', 'Attendees'],
+['United States', 150],
+['Belgium', 67],
+['Germany', 61],
+['South Korea', 49],
+['United Kingdom', 42],
+['Singapore', 39],
+['Spain', 37],
+['Nigeria', 34],
+['Japan', 27],
+['France', 25],
+['Italy', 24],
+['Netherlands', 23],
+['Turkey', 22],
+['South Africa', 22],
+['Portugal', 19],
+['Indonesia', 16],
+['Thailand', 15],
+['Canada', 15],
+['Norway', 14],
+['Iceland', 13],
+['Brazil', 13],
+['Australia', 13],
+['Sweden', 12],
+['China', 12],
+['Tunisia', 11],
+['Malaysia', 11],
+['Ghana', 11],
+['New Zealand', 10],
+['Russia', 9],
+['Poland', 9],
+['Morocco', 9],
+['Mexico', 9],
+['United Arab Emirates', 8],
+['Philippines', 8],
+['Malawi', 8],
+['Korea', 8],
+['Jamaica', 8],
+['Denmark', 8],
+['Austria', 8],
+['Venezuela', 7],
+['Switzerland', 7],
+['Slovenia', 7],
+['Ireland', 7],
+['Botswana', 7],
+['Vietnam', 6],
+['Sudan', 6],
+['Luxembourg', 6],
+['Greece', 6],
+['Finland', 6],
+['Colombia', 6],
+['Kenya', 5],
+['Kazakhstan', 5],
+['Hong Kong', 5],
+['Estonia', 5],
+['Croatia', 5],
+['Argentina', 5],
+['The Gambia', 4],
+['Syrian Arab Republic', 4],
+['Saudi Arabia', 4],
+['Lithuania', 4],
+['Ethiopia', 4],
+['Cote d\'Ivoire', 4],
+['Brunei', 4],
+['Zambia', 3],
+['Uganda', 3],
+['Trinidad and Tobago', 3],
+['Sierra Leone', 3],
+['Serbia', 3],
+['Romania', 3],
+['Malta', 3],
+['Liberia', 3],
+['Latvia', 3],
+['Czech Republic', 3],
+['Cameroon', 3],
+['Belarus', 3],
+['Bahrain', 3],
+['Azerbaijan', 3],
+['Armenia', 3],
+['Angola', 3],
+['Sri Lanka', 2],
+['Slovakia', 2],
+['Peru', 2],
+['Papua New Guinea', 2],
+['Mauritus', 2],
+['Madagascar', 2],
+['Lebanon', 2],
+['Kuwait', 2],
+['Israel', 2],
+['Honduras', 2],
+['Hawaii', 2],
+['Guatemala', 2],
+['Guadeloupe', 2],
+['Ethopia', 2],
+['Ecuador', 2],
+['Chile', 2],
+['Bolivia', 2],
+['Barbados', 2],
+['Ukraine', 1],
+['Togo', 1],
+['Taiwan', 1],
+['Swaziland', 1],
+['Slovak Republic', 1],
+['Senegal', 1],
+['Northern Cyprus', 1],
+['Niger', 1],
+['Nepal', 1],
+['Namibia', 1],
+['Moldova', 1],
+['Mauritius', 1],
+['Madrid', 1],
+['Macedonia', 1],
+['Lesotho', 1],
+['Lao People\'s Democratic Republic', 1],
+['Jordan', 1],
+['Ivory Coast', 1],
+['India', 1],
+['Hungary', 1],
+['Haiti', 1],
+['Fiji Islands', 1],
+['Egypt', 1],
+['Cyprus', 1],
+['Cape Verde', 1],
+['Bangladesh', 1]
+
+      ]);
+
+      var options = {};
+      options['dataMode'] = 'regions';
+      options['width'] = '1112';
+      options['height' ] = '694';
+      options['colors'] = ['0xedf0d4','0x6c9642','0x365e24','0x13390a'];
+
+      var container = document.getElementById('chart_div');
+      var geomap = new google.visualization.GeoMap(container);
+      geomap.draw(data, options);
+  };
+
+</script>
+</head>
+<body>
+<div id="chart_div"></div> 
+</body>
+</html>

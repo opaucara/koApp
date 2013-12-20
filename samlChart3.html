@@ -1,0 +1,113 @@
+<html>
+<head>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script type="text/javascript">
+    function isNumber (o) {
+        return ! isNaN (o-0) && o !== null && o.replace(/^\s\s*/, '') !== "" && o !== false;
+    }
+    google.load('visualization', '1', {'packages': ['geochart']});
+    google.setOnLoadCallback(drawRegionsMap);
+
+    var chart;
+    var options = {
+        displayMode : 'regions',
+        colorAxis : {minValue: 0, maxValue : 100, colors: ['red', '#d1d2d4']},
+        legend: 'none',
+        region : '142',
+        tooltip : {
+          trigger: 'none'
+        }, 
+        backgroundColor : "#f8f8f8", 
+        datalessRegionColor : "#d1d2d4"
+    };
+    function drawRegionsMap() {
+        var data = new google.visualization.arrayToDataTable([
+          ['Country', 'Popularity'],
+          ['Germany', 200],
+          ['United States', 300],
+          ['Brazil', 400],
+          ['Canada', 500],
+          ['France', 600]
+        ]);
+        var chart = new google.visualization.GeoChart(document.getElementById('visualization'));
+        var newColor = '#c94033';
+
+        google.visualization.events.addListener(chart, 'ready', function() {
+            if ($.browser.msie && $.browser.version < 9) {
+                $('#visualization').find('iframe').contents().on('hover', 'shape', function (e) {
+                    if (e.type == 'mouseenter') {
+                        if ($(this).prop('fillcolor') != '#f5f5f5' && $(this).prop('fillcolor') != 'none' && typeof($(this).prop('fillcolor')) != 'undefined') {
+                            $(this).attr('baseColor', $(this).prop('fillcolor'));
+                            $(this).prop('fillcolor', newColor);
+                        }
+                    }
+                    else {
+                        if (typeof($(this).attr('baseColor')) != 'undefined') {
+                            $(this).prop('fillcolor', "#d1d2d4");
+                        }
+                    }
+                });
+            }
+            else {
+                $('#visualization').on('hover', 'path[fill!="#f5f5f5"][fill!="none"]', function (e) {
+                    if (e.type == 'mouseenter') {
+                        $(this).attr('baseColor', $(this).attr('fill'));
+                        $(this).attr('fill', newColor);
+                    }
+                    else {
+                        $(this).attr('fill', "#d1d2d4");
+                    }
+                });
+            }
+        });
+        chart.draw(data, options);
+        google.visualization.events.addListener(chart, 'regionClick', function(e) {
+            var country = e.region;
+            if(isNumber(country)){
+                options.region = country;
+                drawRegionsMap();
+                $("#continents option").removeAttr("selected");
+                $("#continents option").each(function(){
+                    if($(this).val() == country){
+                        $(this).attr("selected", "selected");
+                    }
+                })
+            }
+        });
+    };
+    $(document).ready(function(){
+        $("#continents").change(function(){
+            options.region = $(this).val();
+            drawRegionsMap();
+        });
+        $(".mark-country").click(function(){
+            var country_code = $(this).data("country-code");
+            alert("select country: " + country_code);
+        });
+    });
+
+</script>
+</head>
+<body>
+ <div id='visualization' style="width: 700px; height: 420px; float: left;"></div>
+    <div style="float: left; margin-left: 10px;">
+        <a href='javascript: void(0);' data-country-code="DE" class="mark-country">Germany</a><br />
+        <a href='javascript: void(0);' data-country-code="US" class="mark-country">United States</a><br />
+        <a href='javascript: void(0);' data-country-code="BR" class="mark-country">Brazil</a><br />
+        <a href='javascript: void(0);' data-country-code="CA" class="mark-country">Canada</a><br />
+        <a href='javascript: void(0);' data-country-code="FR" class="mark-country">France</a> <br />
+        Select continent: <br />
+        <select id="continents">
+            <option value="002">Africa</option>
+            <option value="142" selected="selected">Asia</option>
+            <option value="150">Europe</option>
+            <option value="021">Northern America</option>
+            <option value="029">Caribbean</option>
+            <option value="013">Central America</option>
+            <option value="005">South America</option>
+            <option value="009">Oceania</option>
+        </select>
+    </div>
+</body>
+</html>

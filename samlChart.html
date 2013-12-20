@@ -1,0 +1,47 @@
+<html>
+<head>
+  <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+  <script type="text/javascript">
+  
+  //var chartSchema = [["Los angeles",1],["Madrid",1],["Paris",1],["Buenos Aires",1],["New York",1],["California",1]];
+  var chartSchema =[["Los angeles"],["Madrid"],["Paris"],["Buenos Aires"],["New York"],["California"]];
+  var schemaSource = chartSchema;
+  google.load('visualization', '1', {'packages': ['geochart']});
+  google.setOnLoadCallback(drawMarkersMap);
+  function drawMarkersMap() {
+    var data = new google.visualization.DataTable();
+    data.addColumn('string', 'City');
+    //data.addColumn('string', 'id');
+    data.addRows(schemaSource);
+
+    var options = {
+      //region: 'US',
+      //resolution:'provinces',
+      showZoomOut: true,
+      zoomOutLabel: 'dsadas',
+      displayMode: 'markers',
+      legend: 'none',
+      tooltip: { trigger: 'none'},
+      width: 800,
+      keepAspectRatio: true
+    };
+    
+    var chart = new google.visualization.GeoChart(document.getElementById('chart_div'));
+    chart.draw(data, options);
+    $(document).ready(function() {  
+      google.visualization.events.addListener(chart, 'select', function () {
+        var selection = chart.getSelection();
+        link = '#team-role-' + data.getValue(selection[0].row, 1);
+        jQuery('a[href="' + link + '"]').click();      
+        chart.setSelection(null);
+      });
+    });
+  }
+
+</script>
+</head>
+<body>
+<div id="chart_div"></div> 
+</body>
+</html>
