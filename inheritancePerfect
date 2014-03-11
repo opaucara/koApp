@@ -1,0 +1,23 @@
+  var Animal = function(name){
+    console.log("1");
+    this.name = name;
+  };
+  Animal.prototype.getName = function(){
+    console.log("2");
+    //TODO return private dogName
+    return this.name;
+  };
+  var Dog = function(dogName){
+    console.log("3");
+    Animal.call(this, dogName);
+    //Object.create(Animal.prototype);
+  };
+  //console.log(Object.create(Animal.prototype));
+  Dog.prototype = Object.create(Animal.prototype);
+  //Dog.prototype = new Animal();
+  //can't pass parameter "name", and mainly (new, .call(this, parent)) generates 2 instantiations
+
+  
+  window.res = new Dog('kaieser');
+  console.log(res.getName());
+
